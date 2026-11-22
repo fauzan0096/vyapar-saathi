@@ -1,9 +1,9 @@
 'use strict';
 
 /* =========================================================
-   Vyapar Saathi v2 — Excel / CSV se data laana
-   Excel me rows copy karke yahan paste karein (tab ya comma se alag).
-   Pehli line header honi chahiye; column ka order kuch bhi ho sakta hai.
+   Vyapar Saathi v2 — importing data from Excel / CSV
+   Copy rows from Excel and paste them here (separated by tab or comma).
+   The first line must be a header; the column order can be anything.
    ========================================================= */
 
 var XL_HEAD = {
@@ -51,7 +51,7 @@ function xlRows(text) {
   return lines.map(function (l) { return xlParseLine(l, delim); });
 }
 
-/* header ki line se: kaun sa field kaun se column me hai */
+/* from the header line: which field is in which column */
 function xlMap(cells, wanted) {
   var map = {};
   var used = {};
@@ -105,14 +105,14 @@ function xlTemplate(kind) {
   return ['Date', 'Party', 'Product', 'Qty', 'Rate', 'Invoice', 'Paid date', 'Delivered date'].join('\t');
 }
 
-/* ---------- bikri: orders + bills ---------- */
+/* ---------- sales: orders + bills ---------- */
 
 function importSales(text) {
   var rows = xlRows(text);
-  if (rows.length < 2) { return { error: 'Header ki line aur kam se kam ek row chahiye.' }; }
+  if (rows.length < 2) { return { error: 'Please include a header line and at least one data row.' }; }
   var map = xlMap(rows[0], ['date', 'party', 'product', 'qty', 'rate', 'amount', 'paid', 'delivered', 'invoice']);
   if (map.date === undefined || map.party === undefined || (map.qty === undefined && map.amount === undefined)) {
-    return { error: 'Header me Date, Party aur Qty (ya Amount) hona chahiye. Mila: ' + rows[0].join(' | ') };
+    return { error: 'The header must include Date, Party and Qty (or Amount). Found: ' + rows[0].join(' | ') };
   }
   var res = { orders: 0, bills: 0, newCust: 0, skipped: 0, dup: 0, unmatched: [] };
   var t = todayISO();
@@ -169,14 +169,14 @@ function importSales(text) {
   return res;
 }
 
-/* ---------- raw material ke supplier rate ---------- */
+/* ---------- raw material supplier rates ---------- */
 
 function importRates(text) {
   var rows = xlRows(text);
-  if (rows.length < 2) { return { error: 'Header ki line aur kam se kam ek row chahiye.' }; }
+  if (rows.length < 2) { return { error: 'Please include a header line and at least one data row.' }; }
   var map = xlMap(rows[0], ['date', 'supplier', 'item', 'rate', 'freight', 'paydays', 'rejection']);
   if (map.supplier === undefined || map.rate === undefined) {
-    return { error: 'Header me Supplier aur Rate hona chahiye. Mila: ' + rows[0].join(' | ') };
+    return { error: 'The header must include Supplier and Rate. Found: ' + rows[0].join(' | ') };
   }
   var res = { quotes: 0, skipped: 0, dup: 0 };
   function cell(r, f) { return map[f] === undefined ? '' : (r[map[f]] === undefined ? '' : r[map[f]]); }

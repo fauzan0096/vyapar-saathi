@@ -1,7 +1,7 @@
 'use strict';
 
 /* =========================================================
-   Vyapar Saathi v2 — events, sample data, shuru
+   Vyapar Saathi v2 — events, sample data, startup
    ========================================================= */
 
 function toast(msg) {
@@ -18,8 +18,8 @@ function toast(msg) {
 }
 
 function copyText(text) {
-  if (!text) { toast('Copy karne ke liye kuch nahi'); return; }
-  var ok = function () { toast('Copy ho gaya'); };
+  if (!text) { toast('Nothing to copy'); return; }
+  var ok = function () { toast('Copied'); };
   var fallback = function () {
     try {
       var ta = document.createElement('textarea');
@@ -34,7 +34,7 @@ function copyText(text) {
       document.body.removeChild(ta);
       ok();
     } catch (e) {
-      toast('Copy nahi hua — select karke copy karein');
+      toast('Could not copy - please select the text and copy it manually');
     }
   };
   if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -54,7 +54,7 @@ function render(toTop) {
   var fn = views[tab] || viewAaj;
   document.getElementById('view').innerHTML = fn();
   var sub = document.getElementById('brandSub');
-  if (sub) { sub.textContent = S.settings.business ? S.settings.business : 'Rate · Payment · Customer'; }
+  if (sub) { sub.textContent = S.settings.business ? S.settings.business : 'Rates · Cash · Buyers'; }
   if (toTop) { window.scrollTo(0, 0); }
 }
 
@@ -86,14 +86,14 @@ function onViewClick(e) {
 
   if (a === 'snooze') {
     S.snooze[btn.getAttribute('data-key')] = addDays(todayISO(), num(btn.getAttribute('data-days')) || 1);
-    save(); render(); toast('Theek hai, kuch din ke liye hata diya');
+    save(); render(); toast('Okay, hidden for a few days');
     return;
   }
 
   if (a === 'del-quote') {
-    if (!confirm('Ye rate record hata dein?')) { return; }
+    if (!confirm('Delete this rate record?')) { return; }
     S.quotes = S.quotes.filter(function (q) { return q.id !== id; });
-    save(); render(); toast('Rate hata diya');
+    save(); render(); toast('Rate deleted');
     return;
   }
 
@@ -102,30 +102,30 @@ function onViewClick(e) {
       if (c.id !== id) { return; }
       c.bills.forEach(function (b) { if (b.id === billId) { b.paidOn = todayISO(); } });
     });
-    save(); render(); toast('Bill paid mark ho gaya');
+    save(); render(); toast('Bill marked as paid');
     return;
   }
 
   if (a === 'del-bill') {
-    if (!confirm('Ye bill hata dein?')) { return; }
+    if (!confirm('Delete this bill?')) { return; }
     S.customers.forEach(function (c) {
       if (c.id !== id) { return; }
       c.bills = c.bills.filter(function (b) { return b.id !== billId; });
     });
-    save(); render(); toast('Bill hata diya');
+    save(); render(); toast('Bill deleted');
     return;
   }
 
   if (a === 'del-customer') {
     var c = findCust(id);
     if (!c) { return; }
-    if (!confirm(c.name + ', uske ' + c.bills.length + ' bill aur orders hata dein?')) { return; }
+    if (!confirm('Delete ' + c.name + ' along with ' + c.bills.length + ' bill(s) and all orders?')) { return; }
     S.customers = S.customers.filter(function (x) { return x.id !== id; });
     S.orders = S.orders.filter(function (o) { return o.customerId !== id; });
     S.claims = S.claims.filter(function (x) { return x.customerId !== id; });
     delete S.tones[id];
     ui.custId = null;
-    save(); render(true); toast('Customer hata diya');
+    save(); render(true); toast('Buyer deleted');
     return;
   }
 
@@ -140,27 +140,27 @@ function onViewClick(e) {
 
   if (a === 'order-delivered') {
     var o1 = findOrder(id);
-    if (o1) { o1.delivered = todayISO(); save(); render(); toast('Delivered note ho gaya'); }
+    if (o1) { o1.delivered = todayISO(); save(); render(); toast('Marked as delivered'); }
     return;
   }
   if (a === 'order-reject') {
     var o2 = findOrder(id);
     if (!o2) { return; }
-    var r = prompt('Kitna maal reject hua (' + unitOf() + ')?', '');
+    var r = prompt('How much material was rejected (' + unitOf() + ')?', '');
     if (r === null) { return; }
     o2.rejected = Math.max(0, num(r));
-    save(); render(); toast('Rejection note ho gaya');
+    save(); render(); toast('Rejection recorded');
     return;
   }
   if (a === 'order-replaced') {
     var o3 = findOrder(id);
-    if (o3) { o3.replaced = true; save(); render(); toast('Replacement note ho gaya'); }
+    if (o3) { o3.replaced = true; save(); render(); toast('Replacement recorded'); }
     return;
   }
   if (a === 'del-order') {
-    if (!confirm('Ye order hata dein? (uska bill alag se hatana hoga)')) { return; }
+    if (!confirm('Delete this order? (Its bill must be deleted separately.)')) { return; }
     S.orders = S.orders.filter(function (o) { return o.id !== id; });
-    save(); render(); toast('Order hata diya');
+    save(); render(); toast('Order deleted');
     return;
   }
 
@@ -177,12 +177,12 @@ function onViewClick(e) {
       theirDays: an.hasTheir ? an.td : 0, ours: an.q.ask, outcome: '', note: ''
     });
     ui.claim = null;
-    save(); render(); toast('Claim note ho gaya — nateeja baad me likhein');
+    save(); render(); toast('Claim recorded - add the outcome later');
     return;
   }
   if (a === 'claim-outcome') {
     S.claims.forEach(function (x) { if (x.id === id) { x.outcome = btn.getAttribute('data-out'); } });
-    save(); render(); toast('Nateeja note ho gaya');
+    save(); render(); toast('Outcome recorded');
     return;
   }
   if (a === 'del-claim') {
@@ -192,9 +192,9 @@ function onViewClick(e) {
   }
 
   if (a === 'del-product') {
-    if (!confirm('Ye product hata dein?')) { return; }
+    if (!confirm('Delete this product?')) { return; }
     S.products = S.products.filter(function (x) { return x.id !== id; });
-    save(); render(); toast('Product hata diya');
+    save(); render(); toast('Product deleted');
     return;
   }
   if (a === 'preset-sameer') {
@@ -204,27 +204,27 @@ function onViewClick(e) {
     P.forEach(function (x) {
       S.products.push({ id: uid(), name: x[0], bom: [], conv: 0, yieldPct: 100, capacity: x[1], cost: 0 });
     });
-    save(); render(); toast('15 products add — ab recipe bharein');
+    save(); render(); toast('15 products added - now fill in the recipes');
     return;
   }
 
   if (a === 'demo') {
-    if (!confirm('Sample data load karein? Maujooda data hat jaayega.')) { return; }
+    if (!confirm('Load sample data? Your current data will be replaced.')) { return; }
     S = demoState();
     ui.custId = null;
-    save(); tab = 'aaj'; render(true); toast('Sample data load ho gaya');
+    save(); tab = 'aaj'; render(true); toast('Sample data loaded');
     return;
   }
   if (a === 'demo-clear') {
-    if (!confirm('Sample data hata kar khaali shuru karein?')) { return; }
+    if (!confirm('Remove the sample data and start blank?')) { return; }
     S = blankState(); ui.custId = null;
-    save(); render(true); toast('Sample hata diya');
+    save(); render(true); toast('Sample data removed');
     return;
   }
   if (a === 'reset') {
-    if (!confirm('Sab data khaali ho jaayega. Pehle backup copy kar lein. Aage badhein?')) { return; }
+    if (!confirm('All data will be erased. Please copy a backup first. Continue?')) { return; }
     S = blankState(); ui.custId = null;
-    save(); render(true); toast('Sab khaali kar diya');
+    save(); render(true); toast('All data cleared');
     return;
   }
   if (a === 'export') {
@@ -238,9 +238,9 @@ function onViewClick(e) {
       link.click();
       document.body.removeChild(link);
       setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
-      toast('Backup file ban gayi');
+      toast('Backup file created');
     } catch (err) {
-      toast('Download nahi hua — Backup copy use karein');
+      toast('Download failed - please use Copy backup instead');
     }
     return;
   }
@@ -271,36 +271,36 @@ function onViewSubmit(e) {
       'costOfFunds', 'earlyDiscount', 'earlyDays', 'minMargin', 'targetMargin', 'overhead', 'perDelivery',
       'deliveryDays', 'costOverride', 'riskB', 'riskC'].forEach(function (k) { if (form.elements[k]) { st[k] = fnum(form, k); } });
     if (num(st.minMargin) > num(st.targetMargin)) { st.minMargin = st.targetMargin; }
-    save(); render(); toast('Save ho gaya');
+    save(); render(); toast('Saved');
     return;
   }
 
   if (kind === 'quote') {
     var supplier = fval(form, 'supplier');
     var rate = fnum(form, 'rate');
-    if (!supplier || rate <= 0) { toast('Supplier ka naam aur rate bharein'); return; }
+    if (!supplier || rate <= 0) { toast('Please enter the supplier name and rate'); return; }
     S.quotes.push({
       id: uid(), date: fval(form, 'date') || t, supplier: supplier, item: fval(form, 'item') || S.settings.item || '',
       rate: rate, freight: fnum(form, 'freight'), rejection: fnum(form, 'rejection'), moq: fval(form, 'moq'),
       deliveryDays: fnum(form, 'deliveryDays'), payDays: fnum(form, 'payDays')
     });
-    save(); render(); toast('Rate add ho gaya');
+    save(); render(); toast('Rate added');
     return;
   }
 
   if (kind === 'rfq') {
     S.rfq = { material: fval(form, 'material'), qty: fval(form, 'qty'), days: fnum(form, 'days') || 3, note: fval(form, 'note') };
-    save(); render(); toast('Message taiyar hai');
+    save(); render(); toast('Message is ready');
     return;
   }
 
   if (kind === 'customer') {
     var name = fval(form, 'name');
-    if (!name) { toast('Customer ka naam bharein'); return; }
+    if (!name) { toast('Please enter the buyer name'); return; }
     var nc = { id: uid(), name: name, phone: fval(form, 'phone'), creditDays: fnum(form, 'creditDays'), creditLimit: fnum(form, 'creditLimit'), bills: [] };
     S.customers.push(nc);
     ui.custId = nc.id;
-    save(); render(true); toast('Customer add ho gaya — ab order daalein');
+    save(); render(true); toast('Buyer added - now add an order');
     return;
   }
 
@@ -314,27 +314,27 @@ function onViewSubmit(e) {
       c.creditLimit = fnum(form, 'creditLimit');
     });
     ui.editCustomer = null;
-    save(); render(); toast('Details save ho gayi');
+    save(); render(); toast('Details saved');
     return;
   }
 
   if (kind === 'bill') {
     var custId = fval(form, 'customerId');
     var target = findCust(custId);
-    if (!target) { toast('Customer nahi mila'); return; }
+    if (!target) { toast('Buyer not found'); return; }
     var amount = fnum(form, 'amount');
-    if (amount <= 0) { toast('Bill ka amount bharein'); return; }
+    if (amount <= 0) { toast('Please enter the bill amount'); return; }
     target.bills.push({ id: uid(), date: fval(form, 'date') || t, amount: amount, note: fval(form, 'note'), paidOn: '' });
-    save(); render(); toast('Bill add ho gaya');
+    save(); render(); toast('Bill added');
     return;
   }
 
   if (kind === 'order') {
     var oc = findCust(fval(form, 'customerId'));
-    if (!oc) { toast('Customer nahi mila'); return; }
+    if (!oc) { toast('Buyer not found'); return; }
     var qty = fnum(form, 'qty');
     var orate = fnum(form, 'rate');
-    if (qty <= 0 || orate <= 0) { toast('Quantity aur rate bharein'); return; }
+    if (qty <= 0 || orate <= 0) { toast('Please enter the quantity and rate'); return; }
     var odate = fval(form, 'date') || t;
     var rejected = fnum(form, 'rejected');
     S.orders.push({
@@ -346,7 +346,7 @@ function onViewSubmit(e) {
     if (mk && mk.checked) {
       oc.bills.push({ id: uid(), date: odate, amount: Math.round(qty * orate), note: 'Order ' + dmy(odate), paidOn: '' });
     }
-    save(); render(); toast('Order add ho gaya');
+    save(); render(); toast('Order added');
     return;
   }
 
@@ -360,24 +360,24 @@ function onViewSubmit(e) {
 
   if (kind === 'claim') {
     ui.claim = { cid: fval(form, 'cid'), claimed: fval(form, 'claimed'), theirDays: fval(form, 'theirDays') };
-    if (num(ui.claim.claimed) <= 0) { toast('Unka rate bharein'); ui.claim = null; }
+    if (num(ui.claim.claimed) <= 0) { toast('Please enter their rate'); ui.claim = null; }
     render();
     return;
   }
 
   if (kind === 'lock') {
     S.lock = { months: fnum(form, 'months') || 3, qty: fval(form, 'qty'), ref: fval(form, 'ref'), band: fnum(form, 'band') || 3 };
-    save(); render(); toast('Draft taiyar');
+    save(); render(); toast('Draft is ready');
     return;
   }
 
-  if (kind === 'epd') { S.epd = { amount: fnum(form, 'amount'), disc: fnum(form, 'disc'), daysSaved: fnum(form, 'daysSaved') }; save(); render(); toast('Hisaab taiyar'); return; }
-  if (kind === 'tre') { S.tre = { amount: fnum(form, 'amount'), rate: fnum(form, 'rate'), days: fnum(form, 'days') }; save(); render(); toast('Lagat taiyar'); return; }
-  if (kind === 'rvc') { S.rvc = { diff: fnum(form, 'diff'), days: fnum(form, 'days') }; save(); render(); toast('Compare taiyar'); return; }
+  if (kind === 'epd') { S.epd = { amount: fnum(form, 'amount'), disc: fnum(form, 'disc'), daysSaved: fnum(form, 'daysSaved') }; save(); render(); toast('Calculation is ready'); return; }
+  if (kind === 'tre') { S.tre = { amount: fnum(form, 'amount'), rate: fnum(form, 'rate'), days: fnum(form, 'days') }; save(); render(); toast('Cost is ready'); return; }
+  if (kind === 'rvc') { S.rvc = { diff: fnum(form, 'diff'), days: fnum(form, 'days') }; save(); render(); toast('Comparison is ready'); return; }
 
   if (kind === 'product') {
     var pname = fval(form, 'name');
-    if (!pname) { toast('Product ka naam bharein'); return; }
+    if (!pname) { toast('Please enter the product name'); return; }
     var bom = [];
     String(form.elements.bom.value || '').split('\n').forEach(function (line) {
       var m = line.split('=');
@@ -392,31 +392,31 @@ function onViewSubmit(e) {
     var hit = S.products.filter(function (x) { return x.id === pid; })[0];
     if (hit) { Object.keys(rec).forEach(function (k) { hit[k] = rec[k]; }); }
     else { rec.id = uid(); S.products.push(rec); }
-    save(); render(); toast('Product save ho gaya');
+    save(); render(); toast('Product saved');
     return;
   }
 
   if (kind === 'xl-sales' || kind === 'xl-rates') {
     var txt = form.elements.text.value;
-    if (!String(txt).trim()) { toast('Pehle Excel se rows paste karein'); return; }
+    if (!String(txt).trim()) { toast('Please paste rows from Excel first'); return; }
     var r = kind === 'xl-sales' ? importSales(txt) : importRates(txt);
     if (r.error) { toast(r.error); return; }
     save(); render();
     toast(kind === 'xl-sales'
-      ? r.orders + ' order, ' + r.bills + ' bill, ' + r.newCust + ' naye customer' + (r.dup ? ', ' + r.dup + ' pehle se the' : '') + (r.skipped ? ', ' + r.skipped + ' row chhodi' : '') +
-        (r.unmatched.length ? '. Product nahi mile: ' + r.unmatched.join(', ') : '')
-      : r.quotes + ' rate judey' + (r.dup ? ', ' + r.dup + ' pehle se the' : '') + (r.skipped ? ', ' + r.skipped + ' row chhodi' : ''));
+      ? r.orders + ' order(s), ' + r.bills + ' bill(s), ' + r.newCust + ' new buyer(s)' + (r.dup ? ', ' + r.dup + ' already existed' : '') + (r.skipped ? ', ' + r.skipped + ' row(s) skipped' : '') +
+        (r.unmatched.length ? '. Products not found: ' + r.unmatched.join(', ') : '')
+      : r.quotes + ' rate(s) added' + (r.dup ? ', ' + r.dup + ' already existed' : '') + (r.skipped ? ', ' + r.skipped + ' row(s) skipped' : ''));
     return;
   }
 
   if (kind === 'import') {
     var raw = fval(form, 'json');
-    if (!raw) { toast('Backup ka text paste karein'); return; }
+    if (!raw) { toast('Please paste the backup text'); return; }
     try {
       S = normalize(JSON.parse(raw));
-      save(); render(); toast('Data restore ho gaya');
+      save(); render(); toast('Data restored');
     } catch (err) {
-      toast('Backup galat lag raha hai');
+      toast('The backup text looks invalid');
     }
     return;
   }
@@ -428,7 +428,7 @@ function demoState() {
   var s = blankState();
   s.demo = true;
   s.settings = Object.assign(s.settings, {
-    business: 'Sample Chemicals (misaal)', person: 'Sameer', item: 'DSTDP', unit: 'kg',
+    business: 'Sample Chemicals (example)', person: 'Sameer', item: 'DSTDP', unit: 'kg',
     monthlySales: 2000000, monthlyPurchase: 1500000, monthlyExpenses: 150000,
     creditGiven: 30, creditReceived: 15, stockDays: 10, cashMonths: 3, costOfFunds: 12,
     earlyDiscount: 0, earlyDays: 0, minMargin: 3, targetMargin: 6, overhead: 2, perDelivery: 4000, deliveryDays: 3
@@ -441,7 +441,7 @@ function demoState() {
       deliveryDays: del, payDays: pay, freight: freight || 0, rejection: rej || 0
     });
   }
-  /* sample rate — asli rate aap Rate tab me daalenge */
+  /* sample rates - you will enter your real rates in the Rates tab */
   var SA = 'Stearyl alcohol', TD = 'Thiodipropionic acid (TDPA)';
   q(3, 'Godrej', SA, 154, '1 MT', 4, 30, 2, 0.3);
   q(4, 'VVF', SA, 157, '1 MT', 5, 15, 2, 0.3);
@@ -518,13 +518,13 @@ function demoState() {
   ]);
 
   s.rfq = { material: SA, qty: '5000', days: 4, note: 'GST bill + transport' };
-  s.lock = { months: 3, qty: '', ref: 'Raw material ka chhapa / association rate', band: 3 };
+  s.lock = { months: 3, qty: '', ref: 'Published raw-material / association rate', band: 3 };
   s.epd = { amount: 1000000, disc: 1, daysSaved: 30 };
   s.tre = { amount: 1000000, rate: 11, days: 45 };
   return s;
 }
 
-/* ---------------- shuru ---------------- */
+/* ---------------- startup ---------------- */
 
 S = load();
 save();
@@ -541,6 +541,6 @@ document.getElementById('view').addEventListener('change', onViewChange);
 
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('sw.js').catch(function () { /* offline cache na bane to bhi app chalegi */ });
+    navigator.serviceWorker.register('sw.js').catch(function () { /* the app still works if the offline cache cannot be created */ });
   });
 }

@@ -1,14 +1,14 @@
 'use strict';
 
 /* =========================================================
-   Vyapar Saathi v2 — core: helpers, data, basic hisaab.
-   Sab data phone ke browser (localStorage) me rehta hai.
+   Vyapar Saathi v2 — core: helpers, data, basic calculations.
+   All data stays in the phone's browser (localStorage).
    ========================================================= */
 
 var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 var STORE_KEY = 'vyapar-saathi-v1';
 
-/* ---------------- chhote helpers ---------------- */
+/* ---------------- small helpers ---------------- */
 
 function uid() {
   return Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4);
@@ -59,9 +59,9 @@ function monLabel(ym) {
   return (MONTHS[m - 1] || '?') + ' ' + String(p[0] || '').slice(2);
 }
 function daysAgoText(n) {
-  if (n <= 0) { return 'aaj'; }
-  if (n === 1) { return 'kal'; }
-  return n + ' din pehle';
+  if (n <= 0) { return 'today'; }
+  if (n === 1) { return 'yesterday'; }
+  return n + ' days ago';
 }
 function uniq(arr) {
   var out = [];
@@ -171,7 +171,7 @@ function normalize(raw) {
   });
   s.customers = objs(src.customers).map(function (c) {
     return {
-      id: c.id || uid(), name: c.name || 'Customer', phone: c.phone || '',
+      id: c.id || uid(), name: c.name || 'Buyer', phone: c.phone || '',
       creditDays: num(c.creditDays), creditLimit: num(c.creditLimit),
       bills: objs(c.bills).map(function (b) {
         return { id: b.id || uid(), date: b.date || todayISO(), amount: num(b.amount), note: b.note || '', paidOn: b.paidOn || '' };
@@ -209,7 +209,7 @@ function load() {
   try {
     var raw = localStorage.getItem(STORE_KEY);
     if (raw) { return normalize(JSON.parse(raw)); }
-  } catch (e) { /* khaali state se shuru */ }
+  } catch (e) { /* start with a blank state */ }
   return blankState();
 }
 
@@ -217,11 +217,11 @@ function save() {
   try {
     localStorage.setItem(STORE_KEY, JSON.stringify(S));
   } catch (e) {
-    toast('Data save nahi hua');
+    toast('Could not save data');
   }
 }
 
-/* ---------------- payment hisaab ---------------- */
+/* ---------------- payment calculations ---------------- */
 
 function custDue(c) {
   var t = todayISO();
@@ -260,7 +260,7 @@ function paymentStats() {
   return out;
 }
 
-/* Customer ki asli payment aadat: grade A/B/C/N */
+/* Buyer's real payment habit: grade A/B/C/N */
 function custStanding(c) {
   var s = S.settings;
   var t = todayISO();
@@ -288,13 +288,13 @@ function custStanding(c) {
 }
 
 function gradeLabel(g) {
-  return { A: 'A: time par', B: 'B: thoda late', C: 'C: baar-baar late', N: 'Naya' }[g] || g;
+  return { A: 'A - pays on time', B: 'B - a little late', C: 'C - often late', N: 'New - no history yet' }[g] || g;
 }
 
-/* ---------------- supplier rate hisaab ---------------- */
+/* ---------------- supplier rate calculations ---------------- */
 
-/* Asli lagat per usable unit: rate+freight, rejection ke baad, aur supplier ke credit ka FAAYDA ghata kar.
-   (v1 me credit ulta jud raha tha — theek kiya.) */
+/* True cost per usable unit: rate + freight, after rejection, minus the benefit of the supplier's credit.
+   (v1 added the credit instead of subtracting it - fixed.) */
 function effQuote(q) {
   var s = S.settings;
   var landed = num(q.rate) + num(q.freight);
@@ -361,7 +361,7 @@ function quoteStats(mat) {
   };
 }
 
-/* ---------------- products, recipe (BOM) aur lagat ---------------- */
+/* ---------------- products, recipe (BOM) and cost ---------------- */
 
 function normName(s) { return String(s || '').trim().toLowerCase(); }
 
@@ -372,13 +372,13 @@ function productName(id) {
   var p = id ? findProduct(id) : null;
   return p ? p.name : '';
 }
-/* product na diya ho (ya galat ho) to pehla product; products na hon to '' (single-item mode) */
+/* if no product is given (or it is invalid), the first product; '' if there are no products (single-item mode) */
 function pidOr(pid) {
   if (pid && findProduct(pid)) { return pid; }
   return S.products.length ? S.products[0].id : '';
 }
 
-/* Quotes me jitne alag material/item hain */
+/* All distinct materials/items in the quotes */
 function materialNames() {
   var seen = {}, out = [];
   S.quotes.forEach(function (q) {
@@ -390,7 +390,7 @@ function materialNames() {
   return out;
 }
 
-/* Ek material ka sabse sasta asli rate (pichhle 30 din ke quotes me se; na ho to 3 sabse naye) */
+/* Lowest true rate of a material (from the last 30 days of quotes; if none, the 3 newest) */
 function materialBest(name) {
   var key = normName(name);
   var t = todayISO();
@@ -411,7 +411,7 @@ function materialBest(name) {
   return best;
 }
 
-/* Product ki lagat = (raw material ka kharcha ÷ yield) + conversion */
+/* Product cost = (raw material cost ÷ yield) + conversion */
 function costOf(p) {
   var parts = [], missing = [], stale = 0, raw = 0;
   p.bom.forEach(function (b) {
@@ -432,7 +432,7 @@ function costOf(p) {
   };
 }
 
-/* Aaj ki lagat jisse bechne ka rate nikalta hai */
+/* Today's cost, used to work out the selling rate */
 function costNow(pidIn) {
   var s = S.settings;
   var p = pidIn ? findProduct(pidIn) : null;
@@ -464,8 +464,8 @@ function trendOfQuotes(qs) {
   return { recentAvg: r, base: o, pct: (r - o) / o * 100, nOlder: older.length };
 }
 
-/* Haal ke rate (14 din) vs pehle (15-120 din) ka average — dip/chadhav pakadne ke liye.
-   Product ho to har raw material ka trend, uske kharche ke wajan se milaya jata hai. */
+/* Average of recent rates (14 days) vs earlier (15-120 days) - to catch dips/rises.
+   For a product, each raw material's trend is combined, weighted by its cost share. */
 function costTrend(pidIn) {
   var p = pidIn ? findProduct(pidIn) : null;
   if (p) {
