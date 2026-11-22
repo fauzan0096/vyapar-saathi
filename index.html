@@ -4,33 +4,34 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f5132">
-<title>Vyapar Saathi — Rate, Payment aur Deal</title>
+<title>Vyapar Saathi — Customer, Rate, Payment</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="stylesheet" href="app.css">
 </head>
 <body>
-
 <header class="topbar">
   <div>
     <div class="brand">Vyapar Saathi</div>
-    <div class="brand-sub" id="brandSub">Rate &middot; Payment &middot; Deal</div>
+    <div class="brand-sub" id="brandSub">Rate &middot; Payment &middot; Customer</div>
   </div>
 </header>
-
 <nav class="tabs" id="tabs">
-  <button class="tab" type="button" data-tab="home">Home</button>
+  <button class="tab" type="button" data-tab="aaj">Aaj</button>
+  <button class="tab" type="button" data-tab="cust">Customer</button>
+  <button class="tab" type="button" data-tab="quote">Quote</button>
   <button class="tab" type="button" data-tab="rate">Rate</button>
-  <button class="tab" type="button" data-tab="pay">Payment</button>
-  <button class="tab" type="button" data-tab="cap">Capital</button>
-  <button class="tab" type="button" data-tab="deal">Deal</button>
-  <button class="tab" type="button" data-tab="report">Report</button>
+  <button class="tab" type="button" data-tab="paisa">Paisa</button>
+  <button class="tab" type="button" data-tab="setup">Setup</button>
 </nav>
-
 <main id="view"></main>
-
-<footer class="footer">Data sirf is phone me rehta hai. Report tab se backup lena.</footer>
-
+<footer class="footer">Data sirf is phone me rehta hai. Setup me backup lete rahein.</footer>
 <div id="toast" class="toast" hidden></div>
-
-<script src="app.js"></script>
+<script src="core.js"></script>
+<script src="engine.js"></script>
+<script src="importer.js"></script>
+<script src="views.js"></script>
+<script src="main.js"></script>
 </body>
 </html>

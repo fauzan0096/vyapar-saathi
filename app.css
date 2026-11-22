@@ -191,3 +191,20 @@ details.cust>summary{align-items:flex-start}
 @media (max-width:360px){
   .kpis{grid-template-columns:1fr}
 }
+
+/* v2 additions */
+.job{border:1px solid var(--line);border-left:4px solid var(--acc2);border-radius:10px;padding:10px 12px;margin:0 0 10px;background:#fff}
+.job.churn,.job.delay{border-left-color:var(--bad)}
+.job.remind{border-left-color:var(--warn)}
+.job-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.job-title{font-weight:600;margin-top:4px}
+.crow{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;background:#fff;border:0;border-bottom:1px solid var(--line);padding:10px 2px;font:inherit;color:inherit;cursor:pointer}
+.crow-l{min-width:0}.crow-r{text-align:right;white-space:nowrap}
+.chk{display:flex;gap:8px;align-items:center}
+.steps{padding-left:20px;margin:0 0 10px}
+.tag.warn{background:#fef3c7;color:var(--warn)}
+tr.hi td{background:var(--chip)}
+.tbl{width:100%;border-collapse:collapse;margin-top:8px;font-size:13.5px}
+.tbl th,.tbl td{padding:5px 4px;border-bottom:1px solid var(--line);text-align:left}
+.tbl .num{text-align:right}
+select{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff}
