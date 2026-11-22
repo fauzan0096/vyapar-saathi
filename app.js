@@ -93,7 +93,7 @@ function fnum(form, name) {
 /* ---------------- state ---------------- */
 
 var tab = 'home';
-var ui = { editCustomer: null, open: {} };
+var ui = { editCustomer: null, open: {}, locked: false };
 var S = null;
 
 function blankState() {
@@ -185,6 +185,33 @@ function save() {
   } catch (e) {
     toast('Data save nahi hua');
   }
+}
+
+/* ---------------- app lock (PIN) ----------------
+   Ye screen lock hai: phone par app sirf PIN wale kholein.
+   Ye phone ki lock screen ya encryption ki jagah nahi hai. */
+
+var PIN_KEY = 'vyapar-saathi-pin-v1';
+
+function pinHash(p) {
+  var h = 5381;
+  for (var i = 0; i < p.length; i++) {
+    h = ((h << 5) + h) + p.charCodeAt(i);
+    h = h & 0x7fffffff;
+  }
+  return 'k' + h.toString(36) + '-' + p.length;
+}
+function pinIsSet() {
+  try { return !!localStorage.getItem(PIN_KEY); } catch (e) { return false; }
+}
+function pinSave(p) {
+  try { localStorage.setItem(PIN_KEY, pinHash(p)); } catch (e) { toast('PIN save nahi hua'); }
+}
+function pinClear() {
+  try { localStorage.removeItem(PIN_KEY); } catch (e) {}
+}
+function pinCheck(p) {
+  try { return localStorage.getItem(PIN_KEY) === pinHash(p); } catch (e) { return false; }
 }
 
 /* ---------------- hisaab ---------------- */
@@ -762,6 +789,23 @@ function setupFormHTML() {
     '</form>';
 }
 
+function viewLock() {
+  return '<section class="card lock">' +
+    '<div class="lock-badge">Vyapar Saathi</div>' +
+    '<p class="muted small" style="margin:0">Ye app sirf apne malik ke liye hai. PIN daal kar kholein.</p>' +
+    '<form data-form="unlock">' +
+      '<label class="fld"><span>PIN</span>' +
+      '<input type="password" name="pin" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="****"></label>' +
+      '<div class="btnrow"><button class="btn" type="submit">Kholein</button></div>' +
+    '</form>' +
+    '<p class="muted small" style="margin:14px 0 0">PIN isi phone me save hota hai. ' +
+      'Bhoolne par data wapas nahi aayega \u2014 isliye mahine me ek baar backup copy bana kar rakh lein.</p>' +
+    '<div class="btnrow" style="justify-content:center">' +
+      '<button class="link del" type="button" data-action="pin-forgot">PIN bhool gaye?</button>' +
+    '</div>' +
+  '</section>';
+}
+
 function effNote(st) {
   if (!st.bestEff) { return ''; }
   var unit = S.settings.unit || 'unit';
@@ -878,10 +922,22 @@ function viewHome() {
         '<button class="btn alt" type="button" data-action="tab" data-tab="pay">Payment reminder</button>' +
         '<button class="btn alt" type="button" data-action="tab" data-tab="deal">Deal ki taiyari</button>' +
       '</div>' +
-      '<p class="muted small" style="margin:10px 0 0">' +
-        'Tareeqa: pehle rate ka record, phir early-payment offer, phir monthly rate agreement. ' +
-        'TReDS/bill discounting tab jab paisa phansne lage.</p>' +
-    '</section>';
+      '<div class="steps">' +
+        '<div class="step"><b>1</b><span><strong>Setup:</strong> Home ke "Mera business" me chaar number bhar dein \u2014 ' +
+          'mahine ki bikri, kharid, kharcha aur credit din. Baaki sab isi se ban jaata hai.</span></div>' +
+        '<div class="step"><b>2</b><span><strong>Rate:</strong> jo rate mile, ek line me daal dein (freight aur rejection % ke saath). ' +
+          '"Asli" column batata hai kaun sach me sasta hai.</span></div>' +
+        '<div class="step"><b>3</b><span><strong>Payment:</strong> customer aur uske bill daalein \u2014 reminder, aging aur ' +
+          'paise ka return khud ban jaata hai.</span></div>' +
+        '<div class="step"><b>4</b><span><strong>Mahine me ek baar Report:</strong> "kya sudharna hai" wali list hi aapka agenda hai.</span></div>' +
+      '</div>' +
+    '</section>' +
+    (pinIsSet() ? '' : '<section class="card">' +
+      '<div class="card-head"><h2>App lock</h2><span class="hint">abhi nahi laga</span></div>' +
+      '<p class="muted small" style="margin:0">Ye app aapke phone par sirf aapke use ke liye hai. ' +
+        '4-6 ank ka PIN laga dein taake koi aur na khole \u2014 Report tab se, 20 second ka kaam.</p>' +
+      '<div class="btnrow"><button class="btn" type="button" data-action="tab" data-tab="report">Report tab kholein</button></div>' +
+    '</section>');
 }
 
 function rateSignal(st) {
@@ -1275,7 +1331,7 @@ function viewCap() {
         'Turant haath me: ' + money(bAmt - bCost) + '\n\n' +
         'Fayda: customer ki 60 din ki credit nahi tooti, aur aapka paisa 3 mahine ke liye nahi phansta.' +
       '</div>' +
-      '<p class="muted small" style="margin:10px 0 0">Ek aur niyam: MSME ko 45 din ke andar payment na karne par buyer ke liye ' +
+      '<p class="muted small" style="margin:10px 0 0">Ek aur niyam: MSME ko 45 din ke andar payment na karne par customer ke liye ' +
         'tax deduction (43B(h)) ka fayda late payment tak ruk jaata hai. Apne CA se confirm karke customer se baat me use karein.</p>' +
     '</section>';
 }
@@ -1395,6 +1451,18 @@ function viewReport() {
       }).join('') +
     '</section>' +
     '<section class="card">' +
+      '<div class="card-head"><h2>App lock (PIN)</h2><span class="hint">' + (pinIsSet() ? 'laga hua hai' : 'nahi laga') + '</span></div>' +
+      '<p class="muted small" style="margin:0 0 10px">Phone par ye app sirf aap kholein \u2014 4 se 6 ank ka PIN. ' +
+        'Ye screen lock hai; phone ki lock screen ki jagah nahi.</p>' +
+      '<form data-form="pin-set" class="grid2">' +
+        field('Naya PIN (4-6 ank)', 'pin', '', 'password', '****') +
+        '<div class="row-end">' +
+          '<button class="btn" type="submit">PIN lagayein</button>' +
+          (pinIsSet() ? '<button class="btn danger" type="button" data-action="pin-remove">PIN hataayein</button>' : '') +
+        '</div>' +
+      '</form>' +
+    '</section>' +
+    '<section class="card">' +
       '<div class="card-head"><h2>Backup / data</h2></div>' +
       '<p class="muted small" style="margin:0 0 10px">Data sirf is phone ke browser me rehta hai. Mahine me ek baar ' +
         'backup copy karke apne aap ko WhatsApp par bhej lein.</p>' +
@@ -1464,6 +1532,16 @@ function setTab(name) {
 }
 
 function render() {
+  var nav = document.getElementById('tabs');
+  if (ui.locked) {
+    if (nav) { nav.style.display = 'none'; }
+    document.getElementById('view').innerHTML = viewLock();
+    var subLock = document.getElementById('brandSub');
+    if (subLock) { subLock.textContent = 'PIN se khulega'; }
+    window.scrollTo(0, 0);
+    return;
+  }
+  if (nav) { nav.style.display = ''; }
   var tabs = document.querySelectorAll('#tabs .tab');
   for (var i = 0; i < tabs.length; i++) {
     tabs[i].classList.toggle('active', tabs[i].getAttribute('data-tab') === tab);
@@ -1562,6 +1640,25 @@ function onViewClick(e) {
     ui.open[id] = true;
     S.tones[id] = btn.getAttribute('data-tone') || 'normal';
     save(); render();
+    return;
+  }
+
+  if (a === 'pin-remove') {
+    if (!confirm('PIN hata dein? Phir ye app koi bhi khol sakta hai.')) { return; }
+    pinClear();
+    save(); render(); toast('PIN hat gaya');
+    return;
+  }
+
+  if (a === 'pin-forgot') {
+    if (!confirm('PIN hata kar app ko khaali karna hai? Ismein saara data mit jaayega.')) { return; }
+    if (!confirm('Pakka? Backup ho to pehle restore kar lein \u2014 data wapas nahi aayega.')) { return; }
+    pinClear();
+    S = blankState();
+    save();
+    ui.locked = false;
+    render();
+    toast('PIN hata diya \u2014 app khaali hai');
     return;
   }
 
@@ -1726,6 +1823,30 @@ function onViewSubmit(e) {
     return;
   }
 
+  if (kind === 'unlock') {
+    var pinTry = fval(form, 'pin');
+    if (pinCheck(pinTry)) {
+      ui.locked = false;
+      render();
+    } else {
+      toast('PIN galat hai');
+      if (form.elements['pin']) {
+        form.elements['pin'].value = '';
+        form.elements['pin'].focus();
+      }
+    }
+    return;
+  }
+
+  if (kind === 'pin-set') {
+    var newPin = fval(form, 'pin');
+    if (!/^[0-9]{4,6}$/.test(newPin)) { toast('4 se 6 ank ka PIN daalein'); return; }
+    pinSave(newPin);
+    ui.locked = false;
+    save(); render(); toast('PIN lag gaya');
+    return;
+  }
+
   if (kind === 'rvc') {
     S.rvc = { diff: fnum(form, 'diff'), days: fnum(form, 'days') };
     save(); render(); toast('Compare taiyar');
@@ -1822,6 +1943,7 @@ function demoState() {
 
 S = load();
 save();
+ui.locked = pinIsSet();
 render();
 
 document.getElementById('tabs').addEventListener('click', function (e) {
@@ -1831,3 +1953,23 @@ document.getElementById('tabs').addEventListener('click', function (e) {
 });
 document.getElementById('view').addEventListener('click', onViewClick);
 document.getElementById('view').addEventListener('submit', onViewSubmit);
+
+/* home screen se chalane ke liye offline shell */
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('sw.js').catch(function () { /* ignore */ });
+}
+
+/* 3 minute se zyada app background me rahi to PIN dobara maangein */
+var hiddenAt = 0;
+document.addEventListener('visibilitychange', function () {
+  if (document.hidden) {
+    hiddenAt = Date.now();
+    return;
+  }
+  if (pinIsSet() && hiddenAt && (Date.now() - hiddenAt) > 180000) {
+    ui.locked = true;
+    ui.editCustomer = null;
+    render();
+  }
+  hiddenAt = 0;
+});

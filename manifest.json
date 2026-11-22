@@ -1,0 +1,16 @@
+{
+  "name": "Vyapar Saathi",
+  "short_name": "Vyapar",
+  "description": "Rate, payment aur working capital ka hisaab — sirf apne use ke liye.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f6f3",
+  "theme_color": "#0f5132",
+  "lang": "hi",
+  "icons": [
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "favicon.png", "sizes": "any", "type": "image/png" }
+  ]
+}
