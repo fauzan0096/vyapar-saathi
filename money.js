@@ -1023,7 +1023,7 @@ function viewPort() {
 
   var empty = !S.customers.length && !S.quotes.length;
 
-  return '' + (S.demo ? demoBanner() : '') +
+  return '' + (S.demo ? demoBanner() : '') + introCard() +
     (empty
       ? '<section class="card"><div class="card-head"><h2>Start here</h2><span class="hint">3 steps</span></div>' +
         '<div class="steps">' +
@@ -1126,3 +1126,129 @@ function mktFetch(force) {
     render(true);
   });
 }
+
+
+/* =========================================================
+   Sample data + one-page intro
+   ========================================================= */
+
+function introCard() {
+  return '<details class="card">' +
+    '<summary><h2>What this app is</h2><span class="hint">1 minute read</span></summary>' +
+    '<div class="cust-body">' +
+    '<p class="small" style="margin:0 0 8px"><b>A rate, cash and customer register with a brain.</b> ' +
+    'You enter supplier rates, orders and bills. The app turns them into a floor price for every customer, a rate ladder, ' +
+    'a recovery list, and the true cost of each supplier.</p>' +
+    '<p class="small" style="margin:0 0 8px"><b>What it does not do:</b> it does not invent market rates, it cannot send WhatsApp ' +
+    'messages by itself, and it knows nothing you have not entered.</p>' +
+    '<p class="small" style="margin:0 0 8px"><b>Your data stays on this phone.</b> Take a backup from the Money tab once a month.</p>' +
+    '<p class="small" style="margin:0"><b>First week:</b> 10 minutes in Setup, two or three supplier rates, two customers with bills. ' +
+    'After that, two minutes a day.</p>' +
+    '<div class="btnrow">' +
+      '<button class="btn" type="button" data-mact="m-sample">Load sample data</button>' +
+      '<button class="btn alt" type="button" data-mact="m-sample-clear">Clear all data</button>' +
+      '<a class="btn alt" href="guide.html">Full guide</a>' +
+    '</div></div></details>';
+}
+
+function loadSample() {
+  var t = todayISO();
+  function d(n) { return addDays(t, -n); }
+  function q(days, supplier, rate, freight, rej, pay) {
+    S.quotes.push({
+      id: uid(), date: d(days), supplier: supplier, item: 'DSTDP',
+      rate: rate, freight: freight, rejection: rej, moq: '500 kg', deliveryDays: 3, payDays: pay
+    });
+  }
+  S.settings.business = 'Sample Chemicals';
+  S.settings.item = 'DSTDP';
+  S.settings.unit = 'kg';
+  S.settings.monthlySales = 2600000;
+  S.settings.monthlyPurchase = 2200000;
+  S.settings.monthlyExpenses = 140000;
+  S.settings.creditGiven = 60;
+  S.settings.creditReceived = 15;
+  S.settings.stockDays = 10;
+  S.settings.costOfFunds = 12;
+  S.settings.minMargin = 3;
+  S.settings.targetMargin = 6;
+  S.settings.costOverride = 0;
+
+  S.quotes = [];
+  q(2, 'Gupta Chemicals', 285, 2, 0.5, 15);
+  q(2, 'Anand Traders', 292, 0, 0, 7);
+  q(6, 'Balaji Chem', 279, 3, 3, 30);
+  q(12, 'Gupta Chemicals', 288, 2, 0.5, 15);
+  q(25, 'Gupta Chemicals', 291, 2, 0.5, 15);
+  q(40, 'Anand Traders', 296, 0, 0, 7);
+
+  var c1 = { id: uid(), name: 'Verma Polymers', phone: '9876543210', creditDays: 60, creditLimit: 600000, bills: [] };
+  var c2 = { id: uid(), name: 'Sharma Rubber', phone: '9812345678', creditDays: 45, creditLimit: 400000, bills: [] };
+  var c3 = { id: uid(), name: 'Kapoor Traders', phone: '', creditDays: 30, creditLimit: 250000, bills: [] };
+  S.customers = [c1, c2, c3];
+
+  c1.bills.push({ id: uid(), date: d(70), amount: 240000, note: 'INV-118', paidOn: '' });
+  c1.bills.push({ id: uid(), date: d(20), amount: 180000, note: 'INV-131', paidOn: '' });
+  c1.bills.push({ id: uid(), date: d(110), amount: 150000, note: 'INV-102', paidOn: d(55) });
+  c2.bills.push({ id: uid(), date: d(12), amount: 160000, note: 'INV-128', paidOn: '' });
+  c2.bills.push({ id: uid(), date: d(95), amount: 120000, note: 'INV-099', paidOn: d(62) });
+  c3.bills.push({ id: uid(), date: d(48), amount: 90000, note: 'INV-121', paidOn: '' });
+
+  S.orders = [];
+  function order(c, days, qty, rate, pid, promised, delivered, rejected) {
+    S.orders.push({
+      id: uid(), customerId: c.id, date: d(days), product: pid || '', qty: qty, rate: rate,
+      promised: promised ? d(promised) : '', delivered: delivered ? d(delivered) : '',
+      rejected: rejected || 0, replaced: false, note: ''
+    });
+  }
+  order(c1, 95, 800, 281, '', 92, 91, 0);
+  order(c1, 62, 900, 284, '', 59, 60, 6);
+  order(c1, 30, 1000, 286, '', 27, 26, 0);
+  order(c1, 8, 1200, 289, '', 5, 0, 0);
+  order(c2, 55, 500, 285, '', 52, 52, 0);
+  order(c2, 25, 600, 288, '', 22, 21, 0);
+  order(c3, 50, 300, 292, '', 47, 47, 0);
+  order(c3, 20, 350, 295, '', 17, 17, 0);
+
+  S.claims = [{
+    id: uid(), customerId: c1.id, date: d(12), claimed: 276, theirDays: 30, ours: 289, outcome: 'ordered', note: ''
+  }];
+
+  MDATA.stock = [
+    { id: mUid(), name: 'DSTDP', qty: 1200, reorder: 1500, unit: 'kg' },
+    { id: mUid(), name: 'Zinc Oxide', qty: 850, reorder: 400, unit: 'kg' }
+  ];
+  MDATA.cheques = [
+    { id: mUid(), party: 'Verma Polymers', amount: 240000, date: addDays(t, 5), note: 'HDFC 4421', status: 'pending' },
+    { id: mUid(), party: 'Sharma Rubber', amount: 120000, date: addDays(t, -3), note: 'SBI 7782', status: 'pending' },
+    { id: mUid(), party: 'Kapoor Traders', amount: 90000, date: d(35), note: 'cleared', status: 'cleared' }
+  ];
+  MDATA.market = MDATA.market || { source: '', last: '', err: '', rates: {} };
+  MDATA.market.rates = {
+    dstdp: { item: 'DSTDP', rate: 283, prev: 288, date: todayISO() }
+  };
+
+  save();
+  mSave();
+  render(true);
+  toast('Sample data loaded');
+}
+
+document.addEventListener('click', function (e) {
+  var b = e.target.closest('[data-mact="m-sample"], [data-mact="m-sample-clear"]');
+  if (!b) { return; }
+  if (b.getAttribute('data-mact') === 'm-sample') {
+    if (!confirm('Load sample data? Your current data will be replaced.')) { return; }
+    loadSample();
+    return;
+  }
+  if (!confirm('Clear all data and start empty? Take a backup first.')) { return; }
+  S = blankState();
+  MDATA.stock = [];
+  MDATA.cheques = [];
+  save();
+  mSave();
+  render(true);
+  toast('All data cleared');
+});
