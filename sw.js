@@ -1,10 +1,10 @@
 'use strict';
 
-/* Vyapar Saathi — offline shell.
-   Cache se turant, network se update. Isse app phone ki
-   home screen se bina internet bhi khulti hai. */
+/* Vyapar Saathi — offline shell (v3).
+   Network pehle (taaki naya code turant mile), internet na ho to cache se.
+   Purana cache activate par saaf ho jaata hai. */
 
-var CACHE = 'vyapar-saathi-v2-1';
+var CACHE = 'vyapar-saathi-v3';
 var ASSETS = ['./', 'index.html', 'guide.html', 'app.css', 'core.js', 'engine.js', 'importer.js',
   'views.js', 'money.js', 'main.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png',
   'favicon.png', 'apple-touch-icon.png', 'xlsx.full.min.js'];
@@ -26,14 +26,17 @@ self.addEventListener('activate', function (e) {
 
 self.addEventListener('fetch', function (e) {
   if (e.request.method !== 'GET') { return; }
-  e.respondWith(caches.match(e.request).then(function (hit) {
-    var net = fetch(e.request).then(function (r) {
+  e.respondWith(
+    fetch(e.request).then(function (r) {
       if (r && r.ok) {
         var cp = r.clone();
-        caches.open(CACHE).then(function (c) { c.put(e.request, cp); });
+        caches.open(CACHE).then(function (c) { c.put(e.request, cp); }).catch(function () {});
       }
       return r;
-    }).catch(function () { return hit; });
-    return hit || net;
-  }));
+    }).catch(function () {
+      return caches.match(e.request).then(function (hit) {
+        return hit || caches.match('index.html');
+      });
+    })
+  );
 });

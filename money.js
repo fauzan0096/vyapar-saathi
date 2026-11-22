@@ -259,7 +259,7 @@ function helpCard() {
     ['6. Money (ye tab)', 'Cash flow, stock ka reorder alert, cheque diary aur backup \u2014 sab ek jagah.']
   ];
   return '<section class="card">' +
-    '<div class="card-head"><h2>Kaise use karein</h2><span class="hint">6 step</span></div>' +
+    '<div class="card-head"><h2>Kaise use karein</h2><span class="hint">6 step \u00B7 build v3</span></div>' +
     steps.map(function (s) {
       return '<div class="obj"><b class="small">' + esc(s[0]) + '</b><p>' + esc(s[1]) + '</p></div>';
     }).join('') +
@@ -340,7 +340,7 @@ function mDoImport(text, kind) {
 
 function dataCard() {
   return '<section class="card">' +
-    '<div class="card-head"><h2>Excel \u2014 data laayein / le jaayein</h2><span class="hint">CSV file</span></div>' +
+    '<div class="card-head"><h2>Excel \u2014 data laayein / le jaayein</h2><span class="hint">Excel / CSV</span></div>' +
     '<p class="muted small" style="margin:0 0 10px">Excel me file ko <b>Save As \u2192 CSV</b> karein, phir yahan se chun lein. ' +
     'Pehli line header honi chahiye (Date, Party, Qty, Rate, Bill amount, Paid date). Column ka order kuch bhi ho, ' +
     'app naam se pehchan leta hai.</p>' +
@@ -603,7 +603,7 @@ function viewMarket() {
 function viewMoney() {
   if (typeof mAutoSnap === 'function') { mAutoSnap(); }
   return '' + (S.demo ? demoBanner() : '') +
-    cashFlowCard() + dataCard() + helpCard() + stockCard() + chequeCard() + backupCard();
+    dataCard() + cashFlowCard() + helpCard() + stockCard() + chequeCard() + backupCard();
 }
 
 /* ---------------- events (sirf is tab ke) ---------------- */
