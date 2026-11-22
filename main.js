@@ -52,7 +52,15 @@ function render(toTop) {
   var views = { port: viewPort, aaj: viewAaj, cust: viewCust, quote: viewQuote, rate: viewRate, market: viewMarket, paisa: viewPaisa, money: viewMoney, setup: viewSetup };
   ui.msgs = [];
   var fn = views[tab] || viewAaj;
-  document.getElementById('view').innerHTML = fn();
+  var html;
+  try {
+    html = fn();
+  } catch (err) {
+    html = '<section class="card"><div class="card-head"><h2>Is tab me kuch gadbad hai</h2></div>' +
+      '<p class="muted small" style="margin:0">Doosra tab kholein, ya app band karke dobara kholein. ' +
+      'Aapka data safe hai &mdash; Money tab se backup le lein.</p></section>';
+  }
+  document.getElementById('view').innerHTML = html;
   var sub = document.getElementById('brandSub');
   if (sub) { sub.textContent = S.settings.business ? S.settings.business : 'Rates · Cash · Customers'; }
   if (toTop) { window.scrollTo(0, 0); }

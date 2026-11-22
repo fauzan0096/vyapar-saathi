@@ -445,6 +445,19 @@ function viewPort() {
   MDATA.cheques.forEach(function (c) { if (c.status === 'pending') { pendChq += num(c.amount); } });
 
   return '' + (S.demo ? demoBanner() : '') +
+    ((!S.customers.length && !S.quotes.length)
+      ? '<section class="card"><div class="card-head"><h2>Shuruaat kaise karein</h2><span class="hint">3 step</span></div>' +
+        '<div class="steps">' +
+          '<div class="step"><b>1</b><span><strong>Setup</strong> \u2014 8 number bharein: bikri, kharid, kharcha, ' +
+            'credit din, paise ka rate (12%), margin.</span></div>' +
+          '<div class="step"><b>2</b><span><strong>Rates</strong> \u2014 2-3 supplier ke rate daalein, ya purani Excel file ' +
+            'Money tab se import kar lein.</span></div>' +
+          '<div class="step"><b>3</b><span><strong>Customers</strong> \u2014 2 customer aur unke bill daalein. ' +
+            'Uske baad ye circle apne aap bhar jaayenge.</span></div>' +
+        '</div>' +
+        '<div class="btnrow"><button class="btn" type="button" data-mtab="setup">Setup kholein</button>' +
+        '<button class="btn alt" type="button" data-mtab="money">Excel import</button></div></section>'
+      : '') +
     '<section class="card">' +
       '<div class="card-head"><h2>Portfolio</h2><span class="hint">' + dmy(todayISO()) + '</span></div>' +
       '<p class="muted small" style="margin:0 0 10px">Har circle ek hissa. Circle dabaayein to wahi tab khul jaayega \u2014 ' +
