@@ -264,7 +264,8 @@ function helpCard() {
       return '<div class="obj"><b class="small">' + esc(s[0]) + '</b><p>' + esc(s[1]) + '</p></div>';
     }).join('') +
     '<p class="muted small" style="margin:10px 0 0">Roz 2 minute: Today kholein aur jo kaam dikhe wo kar dein. ' +
-    'Mahine ki 1 tareekh: Setup \u2192 Backup copy.</p></section>';
+    'Mahine ki 1 tareekh: Setup \u2192 Backup copy.</p>' +
+    '<div class="btnrow"><a class="btn" href="guide.html">Poora guide kholein (Excel import ke saath)</a></div></section>';
 }
 
 /* ---------------- Excel: file import + export ---------------- */
@@ -473,6 +474,7 @@ function viewPort() {
       '<div class="btnrow">' +
         '<button class="btn alt" type="button" data-mtab="setup">Setup badlein</button>' +
         '<button class="btn alt" type="button" data-mtab="aaj">Aaj ka kaam</button>' +
+        '<a class="btn alt" href="guide.html">Guide</a>' +
       '</div>' +
     '</section>';
 }
