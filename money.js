@@ -1252,3 +1252,105 @@ document.addEventListener('click', function (e) {
   render(true);
   toast('All data cleared');
 });
+
+
+/* =========================================================
+   Compact: tab notes, more menu, statement, rejection log
+   ========================================================= */
+
+function tabNote(tab) {
+  var notes = {
+    port: 'Six circles: cash in, overdue, stock, customer grade, margin, cash cycle. A red circle is the job for this week.',
+    aaj: 'Today\u2019s jobs only \u2014 late delivery, overdue payment, customer at risk, reorder due, rate movement. Each has a ready message.',
+    cust: 'Every customer with money outstanding. Open one to see orders, bills, grade, statement and rejection history.',
+    quote: 'Floor price, ask price and the rate ladder for one customer and quantity. Use this before quoting any order.',
+    money: 'Excel import/export, cash flow, stock, cheque diary, customer statement, rejection log, and backup.',
+    setup: 'The eight numbers the whole app runs on, plus products, sample data and backup.'
+  };
+  var n = notes[tab];
+  if (!n) { return ''; }
+  return '<details class="card"><summary><span class="hint">What is in this tab</span></summary>' +
+    '<div class="cust-body"><p class="small" style="margin:0">' + esc(n) + '</p></div></details>';
+}
+
+function moreCard() {
+  var items = [
+    ['rate', 'Rates', 'Supplier rate sheet and true cost'],
+    ['market', 'Market', 'Today\u2019s rate from your sheet'],
+    ['paisa', 'Cash', 'Working capital and cost of credit']
+  ];
+  return '<section class="card">' +
+    '<div class="card-head"><h2>More</h2><span class="hint">same data, other views</span></div>' +
+    '<div class="btnrow">' + items.map(function (x) {
+      return '<button class="btn alt" type="button" data-mtab="' + x[0] + '">' + esc(x[1]) + '</button>';
+    }).join('') + '</div>' +
+    '<p class="muted small" style="margin:10px 0 0">' + items.map(function (x) { return '<b>' + x[1] + ':</b> ' + x[2]; }).join(' \u00B7 ') + '</p>' +
+    '</section>';
+}
+
+function statementCard() {
+  var opts = S.customers.map(function (c) {
+    return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>';
+  }).join('');
+  return '<section class="card">' +
+    '<div class="card-head"><h2>Customer statement</h2><span class="hint">print or save as PDF</span></div>' +
+    '<p class="muted small" style="margin:0 0 8px">Open a customer\u2019s statement (bills, due dates, ageing, delivery and rejection record), ' +
+    'then use <b>Print</b> \u2192 <b>Save as PDF</b> \u2192 send it on WhatsApp.</p>' +
+    (opts
+      ? '<label class="fld"><span>Customer</span><select data-mrole="stmtcust">' + opts + '</select></label>' +
+        '<div class="btnrow"><button class="btn" type="button" data-mact="m-stmt">Open statement</button></div>'
+      : '<p class="muted small">Add a customer first.</p>') +
+    '</section>';
+}
+
+function rejectCard() {
+  var t = todayISO();
+  var rows = S.orders.slice().sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); }).slice(0, 8);
+  var totalQ = 0, totalR = 0;
+  S.orders.forEach(function (o) {
+    if (daysBetween(o.date, t) <= 90) { totalQ += num(o.qty); totalR += num(o.rejected); }
+  });
+  var rejPct = totalQ > 0 ? totalR / totalQ * 100 : 0;
+  var list = rows.map(function (o) {
+    var c = findCust(o.customerId);
+    return '<tr><td>' + dmy(o.date) + '<div class="small muted">' + esc(c ? c.name : '') + '</div></td>' +
+      '<td class="num">' + fmt(o.qty, 0) + '</td>' +
+      '<td class="num">' + (num(o.rejected) ? '<b class="bad">' + fmt(o.rejected, 0) + '</b>' : '\u2014') + '</td>' +
+      '<td class="actions"><button class="link" type="button" data-mact="m-rej" data-mid="' + esc(o.id) + '">Reject qty</button></td></tr>';
+  }).join('');
+  return '<section class="card">' +
+    '<div class="card-head"><h2>Rejection log</h2><span class="hint">last 90 days: ' + fmt(rejPct) + '%</span></div>' +
+    '<p class="muted small" style="margin:0 0 8px">Mark the rejected quantity on any order. 2% rejection on a 6% margin eats a third of the profit \u2014 ' +
+    'this is the number to show the customer.</p>' +
+    (list ? '<div class="table-wrap"><table><thead><tr><th>Order</th><th class="num">Qty</th><th class="num">Rejected</th><th></th></tr></thead><tbody>' + list + '</tbody></table></div>'
+      : '<p class="muted small">No orders yet.</p>') +
+    '</section>';
+}
+
+document.addEventListener('click', function (e) {
+  var b = e.target.closest('[data-mact="m-stmt"], [data-mact="m-rej"]');
+  if (!b) { return; }
+  if (b.getAttribute('data-mact') === 'm-stmt') {
+    var sel = document.querySelector('[data-mrole="stmtcust"]');
+    if (!sel || !sel.value) { toast('Add a customer first'); return; }
+    location.href = 'statement.html?id=' + encodeURIComponent(sel.value);
+    return;
+  }
+  var id = b.getAttribute('data-mid');
+  var o = S.orders.filter(function (x) { return x.id === id; })[0];
+  if (!o) { return; }
+  var v = prompt('Rejected quantity (' + unitOf() + ')?', String(num(o.rejected)));
+  if (v === null) { return; }
+  o.rejected = Math.max(0, num(v));
+  save();
+  render(true);
+  toast('Rejection saved');
+});
+
+/* put the three new cards inside the Money view */
+function viewMoney() {
+  mAutoSnap();
+  return '' + (S.demo ? demoBanner() : '') +
+    statementCard() + dataCard() + cashFlowCard() + rejectCard() + moreCard() +
+    helpCard() + stockCard() + chequeCard() + backupCard();
+}

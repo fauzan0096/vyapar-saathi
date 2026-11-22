@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f5132">
+<title>Statement — Vyapar Saathi</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="app.css">
+<style>
+  @media print{
+    .no-print{display:none !important}
+    .topbar{background:#fff !important;color:#14201a !important}
+    .card{border:0;padding:0;margin:0 0 14px}
+    body{background:#fff}
+  }
+  .stmt-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:10px}
+  .stmt-head h1{font-size:17px;margin:0}
+</style>
+</head>
+<body>
+<header class="topbar no-print">
+  <div>
+    <div class="brand">Customer statement</div>
+    <div class="brand-sub" id="sub">Vyapar Saathi</div>
+  </div>
+</header>
+<main id="out"></main>
+<script>
+function q(id){ return document.getElementById(id); }
+function parseISO(s){ if(!s){ return null; } var p=String(s).split('-'); if(p.length!==3){ return null; } return new Date(Number(p[0]), Number(p[1])-1, Number(p[2])); }
+function num(v){ var n=Number(v); return isFinite(n)?n:0; }
+function money(n){ return '\u20B9' + Math.round(num(n)).toLocaleString('en-IN'); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function dmy(s){ var d=parseISO(s); if(!d){ return '\u2014'; } var M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return d.getDate()+' '+M[d.getMonth()]+' '+String(d.getFullYear()).slice(2); }
+function addDays(iso,days){ var d=parseISO(iso)||new Date(); d.setDate(d.getDate()+Math.round(num(days))); var p=function(n){return String(n).padStart(2,'0');}; return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); }
+function todayISO(){ var d=new Date(); var p=function(n){return String(n).padStart(2,'0');}; return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); }
+function daysBetween(a,b){ var x=parseISO(a), y=parseISO(b); if(!x||!y){ return 0; } return Math.round((y-x)/86400000); }
+
+var S = null;
+try { S = JSON.parse(localStorage.getItem('vyapar-saathi-v1') || 'null'); } catch(e) { S = null; }
+var out = q('out');
+
+if (!S) {
+  out.innerHTML = '<section class="card"><p class="muted">No data on this phone yet. Open the app first.</p></section>';
+} else {
+  var params = new URLSearchParams(location.search);
+  var id = params.get('id') || '';
+  var c = (S.customers || []).filter(function(x){ return x.id === id; })[0];
+  if (!c) {
+    out.innerHTML = '<section class="card"><p class="muted">Customer not found. <a href="index.html">Back to the app</a></p></section>';
+  } else {
+    var t = todayISO();
+    var terms = num(c.creditDays) || num((S.settings||{}).creditGiven) || 30;
+    var bills = (c.bills || []).slice().sort(function(a,b){ return String(a.date).localeCompare(String(b.date)); });
+    var outstanding = 0, overdue = 0;
+    var rows = bills.map(function(b){
+      var due = addDays(b.date, terms);
+      var late = b.paidOn ? 0 : daysBetween(due, t);
+      var st = b.paidOn ? 'Paid ' + dmy(b.paidOn) : (late > 0 ? 'Late ' + late + ' days' : 'Due ' + dmy(due));
+      if (!b.paidOn) {
+        outstanding += num(b.amount);
+        if (late > 0) { overdue += num(b.amount); }
+      }
+      return '<tr><td>' + dmy(b.date) + '</td><td>' + esc(b.note || '') + '</td><td class="num">' + money(b.amount) + '</td><td>' + st + '</td></tr>';
+    }).join('');
+
+    var from = addDays(t, -90);
+    var os = (S.orders || []).filter(function(o){ return o.customerId === c.id && o.date >= from; });
+    var deliv = os.filter(function(o){ return o.delivered; });
+    var onTime = deliv.filter(function(o){ return !o.promised || o.delivered <= o.promised; }).length;
+    var qtyD = 0, rej = 0;
+    deliv.forEach(function(o){ qtyD += num(o.qty); rej += num(o.rejected); });
+    var onTimePct = deliv.length ? Math.round(onTime / deliv.length * 100) : null;
+    var rejPct = qtyD > 0 ? rej / qtyD * 100 : 0;
+    var value90 = 0;
+    os.forEach(function(o){ value90 += num(o.qty) * num(o.rate); });
+
+    out.innerHTML =
+      '<section class="card">' +
+        '<div class="stmt-head"><h1>' + esc((S.settings||{}).business || 'Statement of account') + '</h1>' +
+          '<div class="small muted">' + dmy(t) + '</div></div>' +
+        '<p class="small" style="margin:0"><b>' + esc(c.name) + '</b>' +
+          (c.phone ? ' \u00B7 ' + esc(c.phone) : '') + '<br>Credit terms: ' + terms + ' days' +
+          (num(c.creditLimit) ? ' \u00B7 Limit ' + money(c.creditLimit) : '') + '</p>' +
+        '<div class="mini" style="margin-top:10px">' +
+          '<div><span>Outstanding</span><b>' + money(outstanding) + '</b><i>unpaid bills</i></div>' +
+          '<div><span>Overdue</span><b class="' + (overdue ? 'bad' : '') + '">' + money(overdue) + '</b><i>past due date</i></div>' +
+          '<div><span>Last 90 days</span><b>' + money(value90) + '</b><i>' + os.length + ' orders</i></div>' +
+        '</div>' +
+      '</section>' +
+      '<section class="card">' +
+        '<div class="card-head"><h2>Bills</h2></div>' +
+        (rows ? '<div class="table-wrap"><table><thead><tr><th>Date</th><th>Bill</th><th class="num">Amount</th><th>Status</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
+          : '<p class="muted small">No bills recorded.</p>') +
+      '</section>' +
+      '<section class="card">' +
+        '<div class="card-head"><h2>Delivery and quality \u2014 last 90 days</h2></div>' +
+        '<ul class="steps">' +
+          (onTimePct !== null ? '<li>On-time delivery: <b>' + onTimePct + '%</b> (' + onTime + '/' + deliv.length + ' orders)</li>' : '') +
+          '<li>Rejection: <b>' + rejPct.toFixed(1) + '%</b> of supplied quantity</li>' +
+          '<li>Orders: <b>' + os.length + '</b> worth ' + money(value90) + '</li>' +
+        '</ul>' +
+        '<p class="muted small" style="margin:8px 0 0">This page is for a conversation about rate and credit \u2014 the numbers are from your own record.</p>' +
+      '</section>' +
+      '<div class="btnrow no-print">' +
+        '<button class="btn" type="button" onclick="window.print()">Print / Save as PDF</button>' +
+        '<a class="btn alt" href="index.html">Back to the app</a>' +
+      '</div>' +
+      '<p class="footer no-print">On iPhone: tap Print, then pinch-open the preview, then Share \u2192 Save to Files. Or take a screenshot.</p>';
+    q('sub').textContent = c.name;
+  }
+}
+</script>
+</body>
+</html>

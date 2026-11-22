@@ -5,8 +5,8 @@
    Purana cache activate par saaf ho jaata hai. */
 
 var CACHE = 'vyapar-saathi-v4';
-var ASSETS = ['./', 'index.html', 'guide.html', 'app.css', 'core.js', 'engine.js', 'importer.js',
-  'views.js', 'money.js', 'main.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png',
+var ASSETS = ['./', 'index.html', 'guide.html', 'statement.html', 'app.css', 'core.js', 'engine.js',
+  'importer.js', 'views.js', 'money.js', 'main.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png',
   'favicon.png', 'apple-touch-icon.png', 'xlsx.full.min.js'];
 
 self.addEventListener('install', function (e) {
