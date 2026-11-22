@@ -109,7 +109,7 @@ function fnum(form, name) {
 
 /* ---------------- state ---------------- */
 
-var tab = 'aaj';
+var tab = 'port';
 var ui = {
   custId: null, editCustomer: null, open: {},
   quoteCust: '', quoteQty: '', claim: null, stmtDays: 90,

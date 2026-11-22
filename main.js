@@ -49,7 +49,7 @@ function render(toTop) {
   for (var i = 0; i < tabs.length; i++) {
     tabs[i].classList.toggle('active', tabs[i].getAttribute('data-tab') === tab);
   }
-  var views = { aaj: viewAaj, cust: viewCust, quote: viewQuote, rate: viewRate, paisa: viewPaisa, setup: viewSetup };
+  var views = { port: viewPort, aaj: viewAaj, cust: viewCust, quote: viewQuote, rate: viewRate, market: viewMarket, paisa: viewPaisa, money: viewMoney, setup: viewSetup };
   ui.msgs = [];
   var fn = views[tab] || viewAaj;
   document.getElementById('view').innerHTML = fn();

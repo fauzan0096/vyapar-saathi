@@ -6,8 +6,8 @@
 
 var CACHE = 'vyapar-saathi-v2-1';
 var ASSETS = ['./', 'index.html', 'app.css', 'core.js', 'engine.js', 'importer.js',
-  'views.js', 'main.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png',
-  'favicon.png', 'apple-touch-icon.png'];
+  'views.js', 'money.js', 'main.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png',
+  'favicon.png', 'apple-touch-icon.png', 'xlsx.full.min.js'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) {

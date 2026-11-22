@@ -306,6 +306,58 @@ function viewCustDetail(c) {
     statementCard(c);
 }
 
+/* ---------------- money stuck: aging chart ---------------- */
+function agingChart() {
+  var t = todayISO();
+  var buckets = [
+    { label: '0-30 days', lo: -1, hi: 30, amt: 0 },
+    { label: '31-60 days', lo: 30, hi: 60, amt: 0 },
+    { label: '61-90 days', lo: 60, hi: 90, amt: 0 },
+    { label: '90+ days', lo: 90, hi: 99999, amt: 0 }
+  ];
+  var tops = [];
+  var total = 0;
+  S.customers.forEach(function (c) {
+    var cAmt = 0;
+    custDue(c).forEach(function (b) {
+      var age = Math.max(0, daysBetween(b.date, t));
+      for (var i = 0; i < buckets.length; i++) {
+        if (age > buckets[i].lo && age <= buckets[i].hi) { buckets[i].amt += num(b.amount); break; }
+      }
+      cAmt += num(b.amount);
+    });
+    total += cAmt;
+    if (cAmt > 0) { tops.push({ name: c.name, amt: cAmt }); }
+  });
+  if (!total) { return ''; }
+  var maxB = 0;
+  buckets.forEach(function (b) { if (b.amt > maxB) { maxB = b.amt; } });
+  tops.sort(function (a, b) { return b.amt - a.amt; });
+  var maxT = tops.length ? tops[0].amt : 1;
+
+  var bars = buckets.map(function (b) {
+    var w = maxB > 0 ? Math.max(3, Math.round(b.amt / maxB * 100)) : 3;
+    var cls = (b.lo >= 60 && b.amt > 0) ? ' red' : '';
+    return '<div class="bar"><span>' + esc(b.label) + '</span>' +
+      '<div class="bar-track"><div class="bar-fill' + cls + '" style="width:' + w + '%"></div></div>' +
+      '<b>' + money(b.amt) + '</b></div>';
+  }).join('');
+
+  var topBars = tops.slice(0, 5).map(function (x) {
+    var w = maxT > 0 ? Math.max(3, Math.round(x.amt / maxT * 100)) : 3;
+    return '<div class="bar"><span>' + esc(x.name) + '</span>' +
+      '<div class="bar-track"><div class="bar-fill" style="width:' + w + '%"></div></div>' +
+      '<b>' + money(x.amt) + '</b></div>';
+  }).join('');
+
+  return '<section class="card">' +
+    '<div class="card-head"><h2>Money stuck \u2014 how long</h2><span class="hint">' + money(total) + '</span></div>' +
+    '<div class="hist"><div class="hist-head">Days since the bill was made</div>' + bars + '</div>' +
+    '<div class="hist" style="margin-top:14px"><div class="hist-head">Top customers by money outstanding</div>' + topBars + '</div>' +
+    '<p class="muted small" style="margin:10px 0 0">The red bars are 60 days and older \u2014 you are financing that money for free. ' +
+    'That is where the first reminder should go.</p></section>';
+}
+
 function viewCust() {
   if (ui.custId) {
     var c = findCust(ui.custId);
@@ -320,6 +372,7 @@ function viewCust() {
   return '' + (S.demo ? demoBanner() : '') +
     '<section class="card"><div class="card-head"><h2>Customers</h2><span class="hint">' + S.customers.length + ' customers</span></div>' +
       (rows || '<p class="muted" style="margin:0">No customers yet. Add one below.</p>') + '</section>' +
+    agingChart() +
     '<section class="card"><div class="card-head"><h2>New customer</h2></div>' +
       '<form data-form="customer" class="grid2">' +
         field('Name', 'name', '', 'text', 'e.g. Verma Garments') +
