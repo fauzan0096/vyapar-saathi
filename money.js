@@ -371,7 +371,7 @@ document.addEventListener('change', function (e) {
 
   if (/\.xlsx?$/i.test(file.name)) {
     if (!window.XLSX) {
-      mLastImport = 'Excel padhne wali library load nahi hui. Page refresh karein ya file ko CSV me save karke chunein.';
+      mLastImport = 'The Excel reader did not load. Refresh the page, or save the file as CSV and pick that.';
       render(true);
       return;
     }
@@ -382,18 +382,18 @@ document.addEventListener('change', function (e) {
         var sheet = wb.Sheets[wb.SheetNames[0]];
         mDoImport(XLSX.utils.sheet_to_csv(sheet), kind);
       } catch (err) {
-        mLastImport = 'Excel file padhi nahi gayi: ' + ((err && err.message) ? err.message : 'format theek nahi');
+        mLastImport = 'Could not read the Excel file: ' + ((err && err.message) ? err.message : 'format not recognised');
         render(true);
       }
     };
-    xr.onerror = function () { mLastImport = 'File padhi nahi gayi'; render(true); };
+    xr.onerror = function () { mLastImport = 'Could not read the file'; render(true); };
     xr.readAsArrayBuffer(file);
     return;
   }
 
   var fr = new FileReader();
   fr.onload = function () { mDoImport(String(fr.result || ''), kind); };
-  fr.onerror = function () { mLastImport = 'File padhi nahi gayi'; render(true); };
+  fr.onerror = function () { mLastImport = 'Could not read the file'; render(true); };
   fr.readAsText(file, 'utf-8');
 });
 
@@ -630,28 +630,28 @@ document.addEventListener('click', function (e) {
   if (a === 'm-stock-set') {
     var it = MDATA.stock.filter(function (x) { return x.id === id; })[0];
     if (!it) { return; }
-    var v = prompt('Naya stock (' + (it.unit || 'unit') + ')?', String(it.qty));
+    var v = prompt('New stock (' + (it.unit || 'unit') + ')?', String(it.qty));
     if (v === null) { return; }
     it.qty = num(v);
-    mSave(); render(true); toast('Stock update ho gaya');
+    mSave(); render(true); toast('Stock updated');
     return;
   }
   if (a === 'm-stock-del') {
-    if (!confirm('Item hata dein?')) { return; }
+    if (!confirm('Delete this item?')) { return; }
     MDATA.stock = MDATA.stock.filter(function (x) { return x.id !== id; });
-    mSave(); render(true); toast('Item hata diya');
+    mSave(); render(true); toast('Item deleted');
     return;
   }
   if (a === 'm-chq-set') {
     var v2 = b.getAttribute('data-v');
     MDATA.cheques.forEach(function (c) { if (c.id === id) { c.status = v2; } });
-    mSave(); render(true); toast('Cheque update ho gaya');
+    mSave(); render(true); toast('Cheque updated');
     return;
   }
   if (a === 'm-chq-del') {
-    if (!confirm('Cheque hata dein?')) { return; }
+    if (!confirm('Delete this cheque?')) { return; }
     MDATA.cheques = MDATA.cheques.filter(function (c) { return c.id !== id; });
-    mSave(); render(true); toast('Cheque hata diya');
+    mSave(); render(true); toast('Cheque deleted');
     return;
   }
   if (a === 'm-mkt-now') { mktFetch(true); return; }
@@ -659,7 +659,7 @@ document.addEventListener('click', function (e) {
     MDATA.market.source = '';
     MDATA.market.last = '';
     MDATA.market.err = '';
-    mSave(); render(true); toast('Source hata diya \u2014 ab manual rate');
+    mSave(); render(true); toast('Source removed \u2014 manual rates only');
     return;
   }
   if (a === 'm-exp-sales') { mExportCsv('sales'); return; }
@@ -679,21 +679,21 @@ document.addEventListener('click', function (e) {
       link.click();
       document.body.removeChild(link);
       setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
-      toast('Backup file ban gayi');
+      toast('Backup file created');
     } catch (err) {
-      toast('Download nahi hua \u2014 Copy backup use karein');
+      toast('Download failed \u2014 use Copy backup');
     }
     return;
   }
   if (a === 'm-restore-snap') {
     var last = mLastSnap();
-    if (!last) { toast('Koi snapshot nahi mila'); return; }
-    if (!confirm('Snapshot ' + dmy(last.date) + ' wapas laayein? Abhi ka data badal jaayega.')) { return; }
+    if (!last) { toast('No snapshot found'); return; }
+    if (!confirm('Restore the snapshot of ' + dmy(last.date) + '? Current data will be replaced.')) { return; }
     try {
       if (last.S) { localStorage.setItem('vyapar-saathi-v1', last.S); }
       if (last.M) { localStorage.setItem(MKEY, last.M); }
       location.reload();
-    } catch (err) { toast('Restore nahi hua'); }
+    } catch (err) { toast('Restore failed'); }
     return;
   }
 });
@@ -710,25 +710,25 @@ document.addEventListener('submit', function (e) {
     MDATA.market.err = '';
     mSave();
     mktFetch(true);
-    toast('Source save ho gaya');
+    toast('Source saved');
     return;
   }
 
   if (kind === 'm-mkt-manual') {
     var mi = fval(f, 'item');
     var mr = fnum(f, 'rate');
-    if (!mi || mr <= 0) { toast('Item aur rate bharein'); return; }
+    if (!mi || mr <= 0) { toast('Enter item and rate'); return; }
     var mk = MDATA.market;
     var kk = normName(mi);
     var prev = mk.rates[kk] ? mk.rates[kk].rate : 0;
     mk.rates[kk] = { item: mi, rate: mr, prev: prev, date: fval(f, 'date') || todayISO() };
-    mSave(); render(true); toast('Market rate save ho gaya');
+    mSave(); render(true); toast('Market rate saved');
     return;
   }
 
   if (kind === 'm-stock') {
     var name = fval(f, 'name');
-    if (!name) { toast('Item ka naam daalein'); return; }
+    if (!name) { toast('Enter an item name'); return; }
     var qty = fnum(f, 'qty');
     var reorder = fnum(f, 'reorder');
     var unit = fval(f, 'unit') || (S.settings.unit || '');
@@ -739,34 +739,390 @@ document.addEventListener('submit', function (e) {
     } else {
       MDATA.stock.push({ id: mUid(), name: name, qty: qty, reorder: reorder, unit: unit });
     }
-    mSave(); render(true); toast('Stock save ho gaya');
+    mSave(); render(true); toast('Stock saved');
     return;
   }
 
   if (kind === 'm-cheque') {
     var party = fval(f, 'party');
     var amount = fnum(f, 'amount');
-    if (!party || amount <= 0) { toast('Party aur amount bharein'); return; }
+    if (!party || amount <= 0) { toast('Enter party and amount'); return; }
     MDATA.cheques.push({
       id: mUid(), party: party, amount: amount,
       date: fval(f, 'date') || todayISO(), note: fval(f, 'note'), status: 'pending'
     });
-    mSave(); render(true); toast('Cheque add ho gaya');
+    mSave(); render(true); toast('Cheque added');
     return;
   }
 
   if (kind === 'm-restore') {
     var raw = fval(f, 'json');
-    if (!raw) { toast('Backup paste karein'); return; }
+    if (!raw) { toast('Paste a backup first'); return; }
     try {
       var o = JSON.parse(raw);
-      if (!o || !o.data) { toast('Ye backup theek nahi lag raha'); return; }
+      if (!o || !o.data) { toast('This backup does not look right'); return; }
       localStorage.setItem('vyapar-saathi-v1', o.data);
       if (o.money) { localStorage.setItem(MKEY, o.money); }
       location.reload();
-    } catch (err) { toast('Backup galat hai'); }
+    } catch (err) { toast('Backup is not valid'); }
     return;
   }
 });
 
 mLoad();
+
+
+/* =========================================================
+   ENGLISH UI
+   These declarations replace the Hinglish versions above
+   (in JavaScript the last function declaration wins).
+   ========================================================= */
+
+function cashFlowCard() {
+  var ms = mMonths(6);
+  var sales = mSalesByMonth();
+  var billed = mBillsByMonth();
+  var paid = mPaidByMonth();
+  var p = paymentStats();
+  var w = wcCalc();
+  return '<section class="card">' +
+    '<div class="card-head"><h2>Cash \u2014 last 6 months</h2><span class="hint">in vs out</span></div>' +
+    '<div class="kpis">' +
+      '<div class="kpi"><span class="kpi-l">Outstanding</span><b class="kpi-v">' + money(p.outstanding) + '</b>' +
+        '<span class="kpi-s">' + p.unpaidCount + ' bills</span></div>' +
+      '<div class="kpi"><span class="kpi-l">Overdue</span><b class="kpi-v' + (p.overdue ? ' bad' : '') + '">' + money(p.overdue) + '</b>' +
+        '<span class="kpi-s">' + (p.oldest ? p.oldest + ' days oldest' : 'none') + '</span></div>' +
+      '<div class="kpi"><span class="kpi-l">Working capital</span><b class="kpi-v">' + money(w.total) + '</b>' +
+        '<span class="kpi-s">with cash cycle</span></div>' +
+      '<div class="kpi"><span class="kpi-l">Actual collection</span><b class="kpi-v">' +
+        (p.avgPaidDays ? Math.round(p.avgPaidDays) + ' days' : '\u2014') + '</b><span class="kpi-s">terms ' +
+        num(S.settings.creditGiven) + ' days</span></div>' +
+    '</div>' +
+    '<div class="hist"><div class="hist-head">Sales (orders)</div>' + mBars(ms, sales) + '</div>' +
+    '<div class="hist"><div class="hist-head">Bills raised</div>' + mBars(ms, billed) + '</div>' +
+    '<div class="hist"><div class="hist-head">Cash received</div>' + mBars(ms, paid) + '</div>' +
+    '<p class="muted small" style="margin:10px 0 0">In a month where the cash-received bar is shorter, your money is sitting with customers \u2014 ' +
+    'that is the month you end up borrowing.</p></section>';
+}
+
+function stockCard() {
+  var rows = MDATA.stock.length ? MDATA.stock.map(function (x) {
+    var qty = num(x.qty), reorder = num(x.reorder);
+    var low = reorder > 0 && qty <= reorder;
+    var pct = reorder > 0 ? Math.min(100, Math.round(qty / (reorder * 2) * 100)) : (qty > 0 ? 50 : 3);
+    return '<div class="bar"><span>' + esc(x.name) + '</span>' +
+      '<div class="bar-track"><div class="bar-fill' + (low ? ' red' : '') + '" style="width:' + pct + '%"></div></div>' +
+      '<b>' + fmt(qty, 2) + ' ' + esc(x.unit || '') + '</b></div>' +
+      '<div class="small muted" style="margin:-2px 0 10px 66px">' +
+        (low ? '<span class="tag bad">order now</span>' : '<span class="tag good">OK</span>') +
+        ' reorder at ' + fmt(reorder, 2) + ' ' + esc(x.unit || '') +
+        ' <button class="link" type="button" data-mact="m-stock-set" data-mid="' + esc(x.id) + '">edit qty</button>' +
+        '<button class="link del" type="button" data-mact="m-stock-del" data-mid="' + esc(x.id) + '">\u00D7</button>' +
+      '</div>';
+  }).join('') : '<p class="muted" style="margin:0">No items yet. Add what you hold and the level at which you reorder.</p>';
+
+  return '<section class="card">' +
+    '<div class="card-head"><h2>Stock</h2><span class="hint">' + MDATA.stock.length + ' items</span></div>' +
+    rows +
+    '<form data-mform="m-stock" class="grid2" style="margin-top:10px">' +
+      '<label class="fld"><span>Item</span><input type="text" name="name" placeholder="e.g. DSTDP"></label>' +
+      '<label class="fld"><span>Quantity now</span><input type="number" name="qty" inputmode="decimal" step="any" placeholder="0"></label>' +
+      '<label class="fld"><span>Reorder level (below this, order)</span><input type="number" name="reorder" inputmode="decimal" step="any" placeholder="0"></label>' +
+      '<label class="fld"><span>Unit</span><input type="text" name="unit" placeholder="kg"></label>' +
+      '<div class="row-end"><button class="btn" type="submit">Add / update</button></div>' +
+    '</form></section>';
+}
+
+function chequeCard() {
+  var list = MDATA.cheques.slice().sort(function (a, b) { return String(a.date).localeCompare(String(b.date)); });
+  var t = todayISO();
+  var pend = 0, late = 0, bounce = 0;
+  list.forEach(function (c) {
+    if (c.status === 'bounced') { bounce += 1; }
+    if (c.status === 'pending') {
+      pend += num(c.amount);
+      if (c.date < t) { late += num(c.amount); }
+    }
+  });
+  var rows = list.map(function (c) {
+    var st;
+    if (c.status === 'cleared') { st = '<span class="tag good">cleared</span>'; }
+    else if (c.status === 'bounced') { st = '<span class="tag bad">bounced</span>'; }
+    else if (c.date < t) { st = '<span class="tag bad">late ' + Math.max(0, daysBetween(c.date, t)) + ' days</span>'; }
+    else { st = '<span class="tag">' + Math.max(0, daysBetween(t, c.date)) + ' days left</span>'; }
+    return '<tr><td>' + dmy(c.date) + '<div class="small muted">' + esc(c.party) + '</div></td>' +
+      '<td class="num">' + money(c.amount) + (c.note ? '<div class="small muted">' + esc(c.note) + '</div>' : '') + '</td>' +
+      '<td>' + st + '</td>' +
+      '<td class="actions">' +
+        (c.status === 'pending'
+          ? '<button class="link" type="button" data-mact="m-chq-set" data-mid="' + esc(c.id) + '" data-v="cleared">Cleared</button>' +
+            '<button class="link del" type="button" data-mact="m-chq-set" data-mid="' + esc(c.id) + '" data-v="bounced">Bounce</button>'
+          : '<button class="link" type="button" data-mact="m-chq-set" data-mid="' + esc(c.id) + '" data-v="pending">Undo</button>') +
+        '<button class="link del" type="button" data-mact="m-chq-del" data-mid="' + esc(c.id) + '">\u00D7</button>' +
+      '</td></tr>';
+  }).join('');
+
+  return '<section class="card">' +
+    '<div class="card-head"><h2>Cheque diary</h2><span class="hint">' + MDATA.cheques.length + ' cheques</span></div>' +
+    '<div class="mini">' +
+      '<div><span>Pending</span><b>' + money(pend) + '</b><i>upcoming</i></div>' +
+      '<div><span>Date passed</span><b class="' + (late ? 'bad' : '') + '">' + money(late) + '</b><i>check now</i></div>' +
+      '<div><span>Bounced</span><b class="' + (bounce ? 'bad' : '') + '">' + bounce + '</b><i>sets the limit</i></div>' +
+    '</div>' +
+    (rows
+      ? '<div class="table-wrap"><table><thead><tr><th>Date / party</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>'
+      : '<p class="muted small">No cheques yet.</p>') +
+    '<form data-mform="m-cheque" class="grid2" style="margin-top:10px">' +
+      '<label class="fld"><span>Party</span><input type="text" name="party" placeholder="customer name"></label>' +
+      '<label class="fld"><span>Amount \u20B9</span><input type="number" name="amount" inputmode="decimal" step="any" placeholder="0"></label>' +
+      '<label class="fld"><span>Cheque date</span><input type="date" name="date" value="' + todayISO() + '"></label>' +
+      '<label class="fld"><span>Note (bank / number)</span><input type="text" name="note" placeholder="optional"></label>' +
+      '<div class="row-end"><button class="btn" type="submit">Add cheque</button></div>' +
+    '</form></section>';
+}
+
+function backupCard() {
+  var last = mLastSnap();
+  return '<section class="card">' +
+    '<div class="card-head"><h2>Backup</h2><span class="hint">' +
+      (last ? 'last auto: ' + dmy(last.date) : 'not yet') + '</span></div>' +
+    '<p class="muted small" style="margin:0 0 8px">Your data lives only on this phone. Copy a backup once a month and send it to yourself on WhatsApp. ' +
+    'The app also keeps a daily snapshot of the last 3 days.</p>' +
+    '<div class="btnrow">' +
+      '<button class="btn" type="button" data-mact="m-backup-copy">Copy backup</button>' +
+      '<button class="btn alt" type="button" data-mact="m-backup-file">Download file</button>' +
+      '<button class="btn alt" type="button" data-mact="m-restore-snap">Restore last snapshot</button>' +
+    '</div>' +
+    '<form data-mform="m-restore" style="margin-top:12px">' +
+      '<label class="fld"><span>Paste a backup to restore</span>' +
+      '<textarea name="json" placeholder="Paste the backup text here"></textarea></label>' +
+      '<div class="row-end" style="margin-top:8px"><button class="btn" type="submit">Restore</button></div>' +
+    '</form></section>';
+}
+
+function helpCard() {
+  var steps = [
+    ['1. Setup', 'Enter eight numbers: monthly sales, purchases, expenses, credit days you give, credit days you get, your funding rate (12%), minimum margin and target margin.'],
+    ['2. Rates', 'For every quote add supplier, rate, freight, rejection % and credit days. The "True" column is your real cost. Old data can be imported from Excel.'],
+    ['3. Customers', 'Add each customer with orders (date, qty, rate) and bills (bill date, amount, paid date). This drives reminders, grades and return on money.'],
+    ['4. Quote', 'Pick a customer and quantity: floor, ask and the rate ladder appear. Send the ladder: the rate follows the days they take to pay.'],
+    ['5. Today', 'Three to five jobs every morning, each with a ready message. Snooze what can wait.'],
+    ['6. Money', 'Cash flow, stock reorder alerts, cheque diary, Excel import/export and backup \u2014 all in one place.']
+  ];
+  return '<section class="card">' +
+    '<div class="card-head"><h2>How to use</h2><span class="hint">6 steps \u00B7 build v4</span></div>' +
+    steps.map(function (s) {
+      return '<div class="obj"><b class="small">' + esc(s[0]) + '</b><p>' + esc(s[1]) + '</p></div>';
+    }).join('') +
+    '<p class="muted small" style="margin:10px 0 0">Two minutes a day: open Today and clear what it shows. ' +
+    'First of every month: Backup copy.</p>' +
+    '<div class="btnrow"><a class="btn" href="guide.html">Open the full guide</a></div></section>';
+}
+
+function dataCard() {
+  return '<section class="card">' +
+    '<div class="card-head"><h2>Excel \u2014 import / export</h2><span class="hint">Excel / CSV</span></div>' +
+    '<p class="muted small" style="margin:0 0 10px">Choose the type of data, then pick the file. The first line must be a header ' +
+    '(Date, Party, Qty, Rate, Bill amount, Paid date). Column order does not matter \u2014 the app matches names.</p>' +
+    '<label class="fld"><span>1. What data is it?</span>' +
+      '<select data-mrole="kind"><option value="sales">Sales \u2014 orders, bills, paid date</option>' +
+      '<option value="rates">Purchase \u2014 supplier rate sheet</option></select></label>' +
+    '<label class="fld" style="margin-top:8px"><span>2. Choose an Excel or CSV file</span>' +
+      '<input type="file" accept=".csv,.tsv,.txt,.xlsx,.xls" data-mrole="file"></label>' +
+    (mLastImport ? '<div class="msg">' + esc(mLastImport) + '</div>' : '') +
+    '<p class="muted small" style="margin:10px 0 0">.xlsx and .xls are read directly (first sheet). CSV works too. ' +
+    'You can also copy rows from Excel and paste them in Setup \u2192 Import.</p>' +
+    '<div class="card-head" style="margin-top:16px"><h2>Send app data to Excel</h2></div>' +
+    '<p class="muted small" style="margin:0 0 8px">Download a CSV \u2014 it opens straight in Excel or Google Sheets.</p>' +
+    '<div class="btnrow">' +
+      '<button class="btn" type="button" data-mact="m-exp-sales">Orders + bills (CSV)</button>' +
+      '<button class="btn alt" type="button" data-mact="m-exp-rates">Rate sheet (CSV)</button>' +
+    '</div></section>';
+}
+
+function marketCard() {
+  var mk = MDATA.market;
+  var items = mktItems();
+  var rows = items.map(function (name) {
+    var m = mk.rates[normName(name)] || null;
+    var best = materialBest(name);
+    var your = best ? best.v : 0;
+    var diffTxt = '\u2014', cls = '';
+    if (m && m.rate > 0 && your > 0) {
+      var d = (your - m.rate) / m.rate * 100;
+      diffTxt = (d > 0 ? '+' : '') + fmt(d) + '%';
+      cls = d > 1 ? 'bad' : (d < -1 ? 'ok' : '');
+    }
+    var chg = '';
+    if (m && m.prev > 0 && m.rate > 0) {
+      var c = (m.rate - m.prev) / m.prev * 100;
+      chg = (c > 0 ? '\u2191 ' : (c < 0 ? '\u2193 ' : '')) + fmt(Math.abs(c)) + '%';
+    }
+    return '<tr><td>' + esc(name) + '</td>' +
+      '<td class="num">' + (m ? rs(m.rate) + '<div class="small muted">' + esc(chg) +
+        (m.date ? ' ' + dmy(m.date) : '') + '</div>' : '<span class="muted">\u2014</span>') + '</td>' +
+      '<td class="num">' + (your ? rs(your) : '\u2014') + '</td>' +
+      '<td class="num ' + cls + '">' + diffTxt + '</td></tr>';
+  }).join('');
+
+  return '<section class="card">' +
+    '<div class="card-head"><h2>Market \u2014 today\'s rate</h2><span class="hint">' +
+      (mk.last ? 'checked ' + dmy(mk.last) : 'set a source') + '</span></div>' +
+    '<p class="muted small" style="margin:0 0 10px">This tab pulls your rate sheet (a published Google Sheet or any CSV link) once a day. ' +
+    'Two columns are enough: <b>Item</b> and <b>Rate</b> (Date optional).</p>' +
+    '<form data-mform="m-mkt-src" class="grid2">' +
+      '<label class="fld" style="grid-column:1 / -1"><span>Rate sheet link (CSV)</span>' +
+      '<input type="url" name="source" value="' + esc(mk.source || '') + '" placeholder="https://docs.google.com/.../pub?output=csv"></label>' +
+      '<div class="row-end"><button class="btn" type="submit">Save</button></div>' +
+    '</form>' +
+    '<div class="btnrow">' +
+      '<button class="btn alt" type="button" data-mact="m-mkt-now">Refresh now</button>' +
+      '<button class="btn alt" type="button" data-mact="m-mkt-clear">Use manual rates only</button>' +
+    '</div>' +
+    (mk.err ? '<div class="msg">' + esc(mk.err) + '</div>' : '') +
+    (rows ? '<div class="table-wrap"><table><thead><tr><th>Item</th><th class="num">Market</th>' +
+      '<th class="num">Your true cost</th><th class="num">Difference</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
+      : '<p class="muted small">Once rates arrive, each item shows the market rate and how far your supplier is from it.</p>') +
+    '<form data-mform="m-mkt-manual" class="grid2" style="margin-top:12px">' +
+      '<label class="fld"><span>Item</span><input type="text" name="item" list="mkt-list" placeholder="e.g. DSTDP"></label>' +
+      '<label class="fld"><span>Today\'s rate \u20B9</span><input type="number" name="rate" inputmode="decimal" step="any" placeholder="0"></label>' +
+      '<label class="fld"><span>Date</span><input type="date" name="date" value="' + todayISO() + '"></label>' +
+      '<div class="row-end"><button class="btn" type="submit">Save rate</button></div>' +
+    '</form>' +
+    '<datalist id="mkt-list">' + items.map(function (n) { return '<option value="' + esc(n) + '"></option>'; }).join('') + '</datalist>' +
+    '<p class="muted small" style="margin:10px 0 0">The link must be a <b>published CSV</b> (Google Sheet: File \u2192 Share \u2192 Publish to web \u2192 CSV). ' +
+    'If it is updated every morning the app picks it up by itself; with no internet, type the rate manually.</p>' +
+    '</section>';
+}
+
+function viewPort() {
+  var s = S.settings;
+  var p = paymentStats();
+  var gm = grossMarginPct();
+  var ccc = num(s.stockDays) + num(s.creditGiven) - num(s.creditReceived);
+  var thisMonth = mMonths(1)[0];
+  var salesM = mSalesByMonth()[thisMonth] || 0;
+  var paidM = mPaidByMonth()[thisMonth] || 0;
+  var billedM = mBillsByMonth()[thisMonth] || 0;
+  var cashPct = billedM > 0 ? Math.min(100, paidM / billedM * 100) : 0;
+  var overPct = p.outstanding > 0 ? p.overdue / p.outstanding * 100 : 0;
+
+  var lowStock = 0, okStock = 0;
+  MDATA.stock.forEach(function (x) {
+    if (num(x.reorder) > 0 && num(x.qty) <= num(x.reorder)) { lowStock += 1; } else { okStock += 1; }
+  });
+  var stockTot = lowStock + okStock;
+
+  var grades = { A: 0, B: 0, C: 0, N: 0 };
+  S.customers.forEach(function (c) { grades[custStanding(c).grade] += 1; });
+  var gradeTot = S.customers.length;
+  var aPct = gradeTot ? grades.A / gradeTot * 100 : 0;
+
+  var pendChq = 0;
+  MDATA.cheques.forEach(function (c) { if (c.status === 'pending') { pendChq += num(c.amount); } });
+
+  var empty = !S.customers.length && !S.quotes.length;
+
+  return '' + (S.demo ? demoBanner() : '') +
+    (empty
+      ? '<section class="card"><div class="card-head"><h2>Start here</h2><span class="hint">3 steps</span></div>' +
+        '<div class="steps">' +
+          '<div class="step"><b>1</b><span><strong>Setup</strong> \u2014 eight numbers: sales, purchases, expenses, credit days, funding rate, margin.</span></div>' +
+          '<div class="step"><b>2</b><span><strong>Rates</strong> \u2014 two or three supplier rates, or import your old Excel from the Money tab.</span></div>' +
+          '<div class="step"><b>3</b><span><strong>Customers</strong> \u2014 two customers with their bills. The circles then fill by themselves.</span></div>' +
+        '</div>' +
+        '<div class="btnrow"><button class="btn" type="button" data-mtab="setup">Open Setup</button>' +
+        '<button class="btn alt" type="button" data-mtab="money">Excel import</button></div></section>'
+      : '') +
+    '<section class="card">' +
+      '<div class="card-head"><h2>Portfolio</h2><span class="hint">' + dmy(todayISO()) + '</span></div>' +
+      '<p class="muted small" style="margin:0 0 10px">Each circle is one part of the business. Tap a circle to open its tab and edit the numbers.</p>' +
+      '<div class="port">' +
+        portCard({ tab: 'paisa', pct: cashPct, tone: cashPct >= 80 ? 'ok' : (cashPct >= 50 ? 'warn' : 'bad'),
+          big: Math.round(cashPct) + '%', name: 'Cash received', sub: money(paidM) + ' / ' + money(billedM) }) +
+        portCard({ tab: 'cust', pct: 100 - overPct, tone: overPct <= 15 ? 'ok' : (overPct <= 30 ? 'warn' : 'bad'),
+          big: Math.round(overPct) + '%', name: 'Overdue share', sub: money(p.overdue) + ' / ' + money(p.outstanding) }) +
+        portCard({ tab: 'money', pct: stockTot ? okStock / stockTot * 100 : 0,
+          tone: (stockTot && lowStock) ? 'warn' : 'ok',
+          big: stockTot ? Math.round(okStock / stockTot * 100) + '%' : '\u2014',
+          name: 'Stock OK', sub: stockTot ? (okStock + ' OK, ' + lowStock + ' to order') : 'Add stock items' }) +
+        portCard({ tab: 'cust', pct: aPct, tone: aPct >= 60 ? 'ok' : (aPct >= 30 ? 'warn' : 'bad'),
+          big: grades.A + '/' + gradeTot, name: 'A-grade customers', sub: grades.B + ' B, ' + grades.C + ' C' }) +
+        portCard({ tab: 'quote', pct: Math.min(100, gm / 20 * 100), tone: gm >= 8 ? 'ok' : 'bad',
+          big: fmt(gm, 0) + '%', name: 'Gross margin', sub: '20% fills the ring' }) +
+        portCard({ tab: 'paisa', pct: Math.max(0, 100 - Math.min(100, ccc / 90 * 100)),
+          tone: ccc <= 45 ? 'ok' : (ccc <= 75 ? 'warn' : 'bad'),
+          big: Math.round(ccc) + ' days', name: 'Cash cycle', sub: 'keep under 75 days' }) +
+      '</div>' +
+      '<div class="mini" style="margin-top:12px">' +
+        '<div><span>Sales this month</span><b>' + money(salesM) + '</b><i>from orders</i></div>' +
+        '<div><span>Cheques pending</span><b>' + money(pendChq) + '</b><i>upcoming</i></div>' +
+        '<div><span>Working capital</span><b>' + money(wcCalc().total) + '</b><i>needed</i></div>' +
+      '</div>' +
+      '<div class="btnrow">' +
+        '<button class="btn alt" type="button" data-mtab="setup">Edit setup</button>' +
+        '<button class="btn alt" type="button" data-mtab="aaj">Today\'s work</button>' +
+        '<a class="btn alt" href="guide.html">Guide</a>' +
+      '</div>' +
+    '</section>';
+}
+
+function mDoImport(text, kind) {
+  var r = (kind === 'rates') ? importRates(text) : importSales(text);
+  if (!r || r.error) {
+    mLastImport = 'Could not read the file: ' + (r && r.error ? r.error : 'rows were not understood');
+    render(true);
+    return;
+  }
+  save();
+  if (kind === 'rates') {
+    mLastImport = 'Imported ' + r.quotes + ' rate records' +
+      (r.dup ? ', ' + r.dup + ' duplicates skipped' : '') +
+      (r.skipped ? ', ' + r.skipped + ' rows not understood' : '');
+  } else {
+    mLastImport = 'Imported ' + r.orders + ' orders, ' + r.bills + ' bills, ' + r.newCust + ' new customers' +
+      (r.dup ? ', ' + r.dup + ' duplicates skipped' : '') +
+      (r.skipped ? ', ' + r.skipped + ' rows not understood' : '') +
+      (r.unmatched && r.unmatched.length ? '. Names not matched: ' + r.unmatched.join(', ') : '');
+  }
+  render(true);
+}
+
+
+function mktFetch(force) {
+  var mk = MDATA.market;
+  if (!mk.source) { return; }
+  if (!force && mk.last === todayISO()) { return; }
+  mk.last = todayISO();
+  mk.err = '';
+  mSave();
+  fetch(mk.source, { cache: 'no-store' }).then(function (r) {
+    if (!r.ok) { throw new Error('HTTP ' + r.status); }
+    return r.text();
+  }).then(function (txt) {
+    var rows = xlRows(txt);
+    if (rows.length < 2) { throw new Error('no data in the file'); }
+    var map = xlMap(rows[0], ['item', 'rate', 'date']);
+    if (map.item === undefined || map.rate === undefined) { throw new Error('header needs Item and Rate'); }
+    var n = 0;
+    for (var i = 1; i < rows.length; i++) {
+      var nm = rows[i][map.item];
+      var rt = num(String(rows[i][map.rate] || '').replace(/[^0-9.]/g, ''));
+      if (!nm || !rt) { continue; }
+      var k = normName(nm);
+      var old = mk.rates[k];
+      mk.rates[k] = {
+        item: String(nm).trim(), rate: rt, prev: old ? old.rate : 0,
+        date: (map.date !== undefined && rows[i][map.date]) ? String(rows[i][map.date]).trim() : todayISO()
+      };
+      n += 1;
+    }
+    mk.err = n ? '' : 'no rows were understood';
+    mSave();
+    render(true);
+  }).catch(function (err) {
+    mk.err = 'Rates could not be fetched: ' + ((err && err.message) ? err.message : 'check the link');
+    mSave();
+    render(true);
+  });
+}

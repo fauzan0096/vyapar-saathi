@@ -56,9 +56,9 @@ function render(toTop) {
   try {
     html = fn();
   } catch (err) {
-    html = '<section class="card"><div class="card-head"><h2>Is tab me kuch gadbad hai</h2></div>' +
-      '<p class="muted small" style="margin:0">Doosra tab kholein, ya app band karke dobara kholein. ' +
-      'Aapka data safe hai &mdash; Money tab se backup le lein.</p></section>';
+    html = '<section class="card"><div class="card-head"><h2>Something went wrong on this tab</h2></div>' +
+      '<p class="muted small" style="margin:0">Open another tab, or close and reopen the app. ' +
+      'Your data is safe &mdash; take a backup from the Money tab.</p></section>';
   }
   document.getElementById('view').innerHTML = html;
   var sub = document.getElementById('brandSub');

@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f5132">
-<title>Vyapar Saathi — poora tareeqa</title>
+<title>Vyapar Saathi — user guide</title>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="app.css">
@@ -14,137 +14,134 @@
 <header class="topbar">
   <div>
     <div class="brand">Vyapar Saathi — Guide</div>
-    <div class="brand-sub">poora tareeqa, step by step</div>
+    <div class="brand-sub">the whole method, step by step</div>
   </div>
 </header>
 
 <main>
 
 <section class="card">
-  <div class="card-head"><h2>App kholna</h2></div>
+  <div class="card-head"><h2>Opening the app</h2></div>
   <ol class="steps">
-    <li>Link kholein (Safari/Chrome me).</li>
-    <li>Share &rarr; <b>Add to Home Screen</b> &mdash; icon ban jaayega, phir home screen se seedha khulega.</li>
-    <li>Pehli baar 2-3 second lag sakte hain (Excel padhne wali library load hoti hai), uske baad turant.</li>
+    <li>Open the link in Safari or Chrome.</li>
+    <li>Tap Share &rarr; <b>Add to Home Screen</b>. An icon appears; open the app from there.</li>
+    <li>The first load takes two or three seconds (the Excel reader is loading), after that it is instant.</li>
   </ol>
-  <p class="muted small" style="margin:8px 0 0">App khulte hi <b>Portfolio</b> khulta hai &mdash; 6 circle. Har circle ek hissa batata hai; circle dabaayein to wahi tab khul jaata hai.</p>
+  <p class="muted small" style="margin:8px 0 0">The app opens on <b>Portfolio</b>: six circles, one for each part of the business. Tap a circle to open that tab and edit the numbers.</p>
 </section>
 
 <section class="card">
-  <div class="card-head"><h2>1. Setup (ek baar, 10 minute)</h2></div>
-  <p class="small" style="margin:0 0 6px">Ye 8 number bharein:</p>
+  <div class="card-head"><h2>1. Setup (once, ten minutes)</h2></div>
+  <p class="small" style="margin:0 0 6px">Enter these numbers:</p>
   <ol class="steps">
-    <li>Business ka naam, aapka naam</li>
+    <li>Business name and your name</li>
     <li>Unit (kg / piece / bag)</li>
-    <li>Mahine ki bikri (₹)</li>
-    <li>Mahine ki kharid (₹)</li>
-    <li>Mahine ka kharcha (salary, rent, bijli)</li>
-    <li>Customer ko kitne din ka credit (60 din)</li>
-    <li>Supplier se kitne din ka credit (0 / 15 / 30)</li>
-    <li>Paisa kitne % par milta hai (OD/CC &mdash; 12%)</li>
+    <li>Sales per month</li>
+    <li>Purchases per month</li>
+    <li>Expenses per month (salary, rent, power)</li>
+    <li>Credit days you give customers (60)</li>
+    <li>Credit days you get from suppliers (0 / 15 / 30)</li>
+    <li>Your funding rate (% per year &mdash; 12)</li>
   </ol>
-  <p class="muted small" style="margin:8px 0 0">Phir <b>minimum margin</b> (3%) aur <b>target margin</b> (6%) &mdash; inhi se app har customer ka floor rate aur ask rate nikaalta hai. Setup me hi <b>Backup</b> hai.</p>
+  <p class="muted small" style="margin:8px 0 0">Then set <b>minimum margin</b> (3%) and <b>target margin</b> (6%). From these the app works out the floor and ask price for every customer. Backup is also in Setup.</p>
 </section>
 
 <section class="card">
-  <div class="card-head"><h2>2. Rates tab</h2></div>
-  <p class="small" style="margin:0 0 6px">Jo rate mile, ek line me: Date, Supplier, Item, Rate, Freight (₹/unit), Rejection %, Credit days, MOQ.</p>
-  <p class="small" style="margin:0">App khud <b>True</b> column nikaalta hai:<br>
-    <b>True cost = (rate + freight) &divide; (1 &minus; rejection%) &minus; supplier credit ka faayda</b></p>
-  <p class="muted small" style="margin:8px 0 0">Matlab: jo rate list me sabse sasta dikh raha hai, wo asli me sabse mehnga ho sakta hai.</p>
+  <div class="card-head"><h2>2. Rates</h2></div>
+  <p class="small" style="margin:0 0 6px">For each quote, one line: date, supplier, item, rate, freight (&#8377; per unit), rejection %, credit days, MOQ.</p>
+  <p class="small" style="margin:0"><b>True cost = (rate + freight) &divide; (1 &minus; rejection%) &minus; benefit of supplier credit</b></p>
+  <p class="muted small" style="margin:8px 0 0">This is why the cheapest-looking rate is often the most expensive supplier.</p>
 </section>
 
 <section class="card">
-  <div class="card-head"><h2>3. Customers tab</h2></div>
-  <p class="small" style="margin:0">Har customer ke liye <b>orders</b> (date, product, qty, rate, promised delivery) aur <b>bills</b> (bill date, amount, paid date) daalein. Isi se reminder, grade A/B/C, churn ka alarm aur &ldquo;paisa ka return&rdquo; nikalta hai.</p>
+  <div class="card-head"><h2>3. Customers</h2></div>
+  <p class="small" style="margin:0">For every customer add <b>orders</b> (date, product, quantity, rate, promised delivery) and <b>bills</b> (bill date, amount, paid date). This drives reminders, the A/B/C grade, the loss-risk alert and the return on money.</p>
 </section>
 
 <section class="card">
-  <div class="card-head"><h2>4. Quote tab</h2></div>
-  <p class="small" style="margin:0 0 6px">Customer + quantity chunein. App dikhata hai:</p>
+  <div class="card-head"><h2>4. Quote</h2></div>
+  <p class="small" style="margin:0 0 6px">Pick a customer and a quantity. You get:</p>
   <ul class="steps">
-    <li><b>Floor</b> &mdash; isse neeche bechna = ghata</li>
-    <li><b>Ask</b> &mdash; target rate</li>
-    <li><b>Rate ladder</b> &mdash; 15 / 30 / 45 / 60 / 90 din payment par alag rate</li>
+    <li><b>Floor</b> &mdash; selling below this is a loss</li>
+    <li><b>Ask</b> &mdash; your target rate</li>
+    <li><b>Rate ladder</b> &mdash; a different rate for 15 / 30 / 45 / 60 / 90 days of payment</li>
   </ul>
-  <p class="muted small" style="margin:8px 0 0">Ladder ka message seedha bhej dein: &ldquo;jitne din me payment, utna rate.&rdquo;</p>
+  <p class="muted small" style="margin:8px 0 0">Send the ladder message: the rate follows the days they take to pay. That one line ends most bargaining.</p>
 </section>
 
 <section class="card">
-  <div class="card-head"><h2>5. Today tab (roz 2 minute)</h2></div>
-  <p class="small" style="margin:0">Delivery late, payment overdue, customer jaane ka khatra, order ka time, rate ka badlaav &mdash; har kaam par ready message. Copy karein ya WhatsApp me kholein; jo abhi nahi karna <b>snooze</b> kar dein.</p>
+  <div class="card-head"><h2>5. Today (two minutes a day)</h2></div>
+  <p class="small" style="margin:0">Late delivery, overdue payment, customer at risk, reorder due, rate movement &mdash; each with a ready message. Copy it or open WhatsApp. Snooze anything that can wait.</p>
 </section>
 
 <section class="card">
   <div class="card-head"><h2>6. Cash, Money, Market</h2></div>
   <ul class="steps">
-    <li><b>Cash</b> &mdash; working capital, credit ki asli lagat, TReDS, early payment ka faayda.</li>
-    <li><b>Money</b> &mdash; 6 mahine ka cash flow, stock ka &ldquo;order karein&rdquo; alert, cheque diary, backup, Excel import-export.</li>
-    <li><b>Market</b> &mdash; aaj ka market rate (Google Sheet ka published CSV link), aur aapke supplier rate se fark. Internet na ho to manual rate.</li>
+    <li><b>Cash</b> &mdash; working capital, the real cost of credit, TReDS, early-payment maths.</li>
+    <li><b>Money</b> &mdash; six-month cash flow, stock reorder alerts, cheque diary, backup, Excel import and export.</li>
+    <li><b>Market</b> &mdash; today's rate from your published CSV link, compared with your own true cost. Manual entry when offline.</li>
   </ul>
 </section>
 
 <section class="card">
-  <div class="card-head"><h2>7. Excel se data laana &mdash; 3 tareeqe</h2></div>
+  <div class="card-head"><h2>7. Importing Excel &mdash; three ways</h2></div>
 
-  <p class="small" style="margin:0 0 4px"><b>A. Sabse aasan: Copy&ndash;Paste (file ki zaroorat nahi)</b></p>
+  <p class="small" style="margin:0 0 4px"><b>A. Copy and paste (no file needed)</b></p>
   <ol class="steps">
-    <li>Excel me data kholo.</li>
-    <li>Header ke saath rows select karo &rarr; Copy.</li>
-    <li>App &rarr; Setup &rarr; Import &rarr; box me paste &rarr; &ldquo;Import sales&rdquo; ya &ldquo;Import rates&rdquo;.</li>
+    <li>Open the sheet.</li>
+    <li>Copy the rows including the header.</li>
+    <li>App &rarr; Setup &rarr; Import &rarr; paste in the box &rarr; Import sales or Import rates.</li>
   </ol>
 
-  <p class="small" style="margin:12px 0 4px"><b>B. Excel file seedha (.xlsx)</b></p>
+  <p class="small" style="margin:12px 0 4px"><b>B. Send the Excel file</b></p>
   <ol class="steps">
-    <li>Excel me file save karo.</li>
-    <li>File phone par le aao: WhatsApp/Email se apne aap ko bhejo &rarr; file par tap &rarr; Share &rarr; <b>Save to Files</b>.</li>
-    <li>App &rarr; <b>Money</b> &rarr; &ldquo;Excel &mdash; data laayein / le jaayein&rdquo;.</li>
-    <li>&ldquo;1. Kaisa data hai?&rdquo; me chuno: Sales (orders + bills) ya Purchase (rate sheet).</li>
-    <li>&ldquo;2. Excel ya CSV file chunein&rdquo; &rarr; Files se wahi file chuno.</li>
-    <li>Result dikhega: kitne order, kitne bill, kitne naye customer, kaunsi row samajh nahi aayi.</li>
+    <li>Save the file in Excel.</li>
+    <li>Send it to yourself on WhatsApp or email, open it on the phone, tap Share &rarr; <b>Save to Files</b>.</li>
+    <li>App &rarr; <b>Money</b> &rarr; &ldquo;Excel &mdash; import / export&rdquo;.</li>
+    <li>Choose the type: Sales (orders and bills) or Purchase (rate sheet).</li>
+    <li>Choose the file from Files.</li>
+    <li>The result appears: how many orders, bills and customers were added, and how many rows were not understood.</li>
   </ol>
 
-  <p class="small" style="margin:12px 0 4px"><b>C. CSV file (agar kuch gadbad kare)</b></p>
-  <p class="small" style="margin:0">Excel &rarr; File &rarr; Save As &rarr; <b>CSV UTF-8</b> &rarr; phone pe bhejo &rarr; wahi tarah import karein.</p>
+  <p class="small" style="margin:12px 0 4px"><b>C. CSV</b></p>
+  <p class="small" style="margin:0">Excel &rarr; File &rarr; Save As &rarr; <b>CSV UTF-8</b> &rarr; send to the phone &rarr; import the same way.</p>
 
-  <p class="small" style="margin:12px 0 4px"><b>Header me kya ho (naam se pehchan hoti hai, order kuch bhi ho)</b></p>
+  <p class="small" style="margin:12px 0 4px"><b>Required headers (names are matched, order does not matter)</b></p>
   <ul class="steps">
-    <li><b>Sales:</b> Date &middot; Party &middot; Product &middot; Qty &middot; Rate (ya Amount) &middot; Paid date &middot; Invoice no</li>
+    <li><b>Sales:</b> Date &middot; Party &middot; Product &middot; Qty &middot; Rate (or Amount) &middot; Paid date &middot; Invoice no</li>
     <li><b>Rates:</b> Date &middot; Supplier &middot; Item &middot; Rate &middot; Freight &middot; Credit days &middot; Rejection %</li>
   </ul>
-
-  <p class="small" style="margin:12px 0 4px"><b>App se Excel me wapas</b></p>
-  <p class="small" style="margin:0">Money &rarr; <b>Orders + bills (CSV)</b> ya <b>Rate sheet (CSV)</b> &rarr; file download &rarr; Excel / Google Sheets me kholein.</p>
+  <p class="muted small" style="margin:8px 0 0">Three things break most old files: title rows above the header (delete them), several sheets (the first one is read), and amounts with currency symbols or commas.</p>
 </section>
 
 <section class="card">
   <div class="card-head"><h2>8. Routine</h2></div>
   <ul class="steps">
-    <li><b>Roz (2 min):</b> Today tab &mdash; jo kaam dikhe wo kar dein.</li>
-    <li><b>Hafte me (5 min):</b> 2-3 supplier se naya rate, Rates me daalein.</li>
-    <li><b>Mahine ki 1 tareekh (10 min):</b> Portfolio dekhein (laal circle = wahi kaam) aur Setup &rarr; Backup copy.</li>
+    <li><b>Daily (2 min):</b> open Today and clear the jobs.</li>
+    <li><b>Weekly (5 min):</b> collect two or three supplier rates and enter them.</li>
+    <li><b>First of the month (10 min):</b> read Portfolio (a red circle is the job), then Backup copy.</li>
   </ul>
 </section>
 
 <section class="card">
-  <div class="card-head"><h2>9. Teen baat saaf rakhni hai</h2></div>
+  <div class="card-head"><h2>9. Three things to be clear about</h2></div>
   <ul class="steps">
-    <li>Data sirf is phone me hai &mdash; backup ke bina phone gaya to data gaya.</li>
-    <li>App bazaar ka rate khud nahi banati; jo aap/supplier daalenge uska record aur faisla deti hai.</li>
-    <li>WhatsApp khud se message nahi bhej sakti &mdash; message taiyar hota hai, bhejne ka tap aap karte hain.</li>
+    <li>Data lives only on this phone. Without a backup, losing the phone means losing the data.</li>
+    <li>The app does not invent market rates; it records what you or your supplier enter and turns it into a decision.</li>
+    <li>No app can send WhatsApp messages by itself &mdash; the app writes the message, you tap send.</li>
   </ul>
 </section>
 
 <section class="card">
-  <div class="card-head"><h2>10. WhatsApp par bhejne ke liye chhota message</h2></div>
-  <div class="msg">Sir, ye app aapke rate, paisa aur stock ka hisaab ek jagah rakhta hai. Isme har customer ka floor rate nikalta hai (lagat + byaaj + risk ke baad), payment reminder ka message banata hai, aur Portfolio me 6 circle me poora business dikhta hai.
+  <div class="card-head"><h2>10. Short message to forward</h2></div>
+  <div class="msg">Sir, this app keeps your rates, payments and stock in one place. It works out the floor price for every customer (after cost, interest and risk), writes the payment reminder, and the Portfolio shows the whole business in six circles.
 
-Link kholein &rarr; Share &rarr; Add to Home Screen. Pehle Setup me 8 number bharein, phir purana data Excel se import kar lein (Money &rarr; Excel).
+Open the link &rarr; Share &rarr; Add to Home Screen. First fill the eight numbers in Setup, then import your old data from Excel (Money &rarr; Excel).
 
-Data sirf aapke phone me rehta hai. 10 minute lagega, phir roz 2 minute.</div>
+Your data stays on your phone. Ten minutes to set up, then two minutes a day.</div>
 </section>
 
-<p class="footer"><a href="index.html">&#8592; App par wapas</a></p>
+<p class="footer"><a href="index.html">&#8592; Back to the app</a></p>
 
 </main>
 </body>
