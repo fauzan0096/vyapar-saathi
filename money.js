@@ -1276,8 +1276,7 @@ function tabNote(tab) {
 function moreCard() {
   var items = [
     ['rate', 'Rates', 'Supplier rate sheet and true cost'],
-    ['market', 'Market', 'Today\u2019s rate from your sheet'],
-    ['paisa', 'Cash', 'Working capital and cost of credit']
+    ['market', 'Market', 'Today\u2019s rate from your sheet']
   ];
   return '<section class="card">' +
     '<div class="card-head"><h2>More</h2><span class="hint">same data, other views</span></div>' +
@@ -1353,4 +1352,28 @@ function viewMoney() {
   return '' + (S.demo ? demoBanner() : '') +
     statementCard() + dataCard() + cashFlowCard() + rejectCard() + moreCard() +
     helpCard() + stockCard() + chequeCard() + backupCard();
+}
+
+
+/* Working capital without any interest / discounting */
+function capitalCard() {
+  var w = wcCalc();
+  return '<section class="card">' +
+    '<div class="card-head"><h2>Money stuck</h2><span class="hint">working capital</span></div>' +
+    '<div class="mini">' +
+      '<div><span>To receive</span><b>' + money(w.recv) + '</b><i>from customers</i></div>' +
+      '<div><span>In stock</span><b>' + money(w.inv) + '</b><i>goods on hand</i></div>' +
+      '<div><span>To pay</span><b>' + money(w.pay) + '</b><i>to suppliers</i></div>' +
+    '</div>' +
+    '<p class="small" style="margin:10px 0 0"><b>Net blocked: ' + money(w.net) + '</b> \u2014 ' +
+      'customer credit + stock \u2212 supplier credit.</p>' +
+    '<p class="muted small" style="margin:6px 0 0">No interest, no discounting \u2014 only your own arithmetic: how much of your money is sitting with others.</p>' +
+    '</section>';
+}
+
+function viewMoney() {
+  mAutoSnap();
+  return '' + (S.demo ? demoBanner() : '') +
+    statementCard() + dataCard() + cashFlowCard() + capitalCard() +
+    rejectCard() + moreCard() + helpCard() + stockCard() + chequeCard() + backupCard();
 }
