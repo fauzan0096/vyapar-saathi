@@ -463,7 +463,7 @@ function viewPort() {
       '<p class="muted small" style="margin:0 0 10px">Har circle ek hissa. Circle dabaayein to wahi tab khul jaayega \u2014 ' +
       'wahin se number badal lein.</p>' +
       '<div class="port">' +
-        portCard({ tab: 'paisa', pct: cashPct, tone: cashPct >= 80 ? 'ok' : (cashPct >= 50 ? 'warn' : 'bad'),
+        portCard({ tab: 'money', pct: cashPct, tone: cashPct >= 80 ? 'ok' : (cashPct >= 50 ? 'warn' : 'bad'),
           big: Math.round(cashPct) + '%', name: 'Is mahine paisa aaya', sub: money(paidM) + ' / ' + money(billedM) }) +
         portCard({ tab: 'cust', pct: 100 - overPct, tone: overPct <= 15 ? 'ok' : (overPct <= 30 ? 'warn' : 'bad'),
           big: Math.round(overPct) + '%', name: 'Overdue hissa', sub: money(p.overdue) + ' / ' + money(p.outstanding) }) +
@@ -475,7 +475,7 @@ function viewPort() {
           big: grades.A + '/' + gradeTot, name: 'A-grade customers', sub: grades.B + ' B, ' + grades.C + ' C' }) +
         portCard({ tab: 'quote', pct: Math.min(100, gm / 20 * 100), tone: gm >= 8 ? 'ok' : 'bad',
           big: fmt(gm, 0) + '%', name: 'Gross margin', sub: '20% = poora circle' }) +
-        portCard({ tab: 'paisa', pct: Math.max(0, 100 - Math.min(100, ccc / 90 * 100)),
+        portCard({ tab: 'money', pct: Math.max(0, 100 - Math.min(100, ccc / 90 * 100)),
           tone: ccc <= 45 ? 'ok' : (ccc <= 75 ? 'warn' : 'bad'),
           big: Math.round(ccc) + ' din', name: 'Cash cycle', sub: '75 din se kam rakhein' }) +
       '</div>' +
@@ -1038,7 +1038,7 @@ function viewPort() {
       '<div class="card-head"><h2>Portfolio</h2><span class="hint">' + dmy(todayISO()) + '</span></div>' +
       '<p class="muted small" style="margin:0 0 10px">Each circle is one part of the business. Tap a circle to open its tab and edit the numbers.</p>' +
       '<div class="port">' +
-        portCard({ tab: 'paisa', pct: cashPct, tone: cashPct >= 80 ? 'ok' : (cashPct >= 50 ? 'warn' : 'bad'),
+        portCard({ tab: 'money', pct: cashPct, tone: cashPct >= 80 ? 'ok' : (cashPct >= 50 ? 'warn' : 'bad'),
           big: Math.round(cashPct) + '%', name: 'Cash received', sub: money(paidM) + ' / ' + money(billedM) }) +
         portCard({ tab: 'cust', pct: 100 - overPct, tone: overPct <= 15 ? 'ok' : (overPct <= 30 ? 'warn' : 'bad'),
           big: Math.round(overPct) + '%', name: 'Overdue share', sub: money(p.overdue) + ' / ' + money(p.outstanding) }) +
@@ -1050,7 +1050,7 @@ function viewPort() {
           big: grades.A + '/' + gradeTot, name: 'A-grade customers', sub: grades.B + ' B, ' + grades.C + ' C' }) +
         portCard({ tab: 'quote', pct: Math.min(100, gm / 20 * 100), tone: gm >= 8 ? 'ok' : 'bad',
           big: fmt(gm, 0) + '%', name: 'Gross margin', sub: '20% fills the ring' }) +
-        portCard({ tab: 'paisa', pct: Math.max(0, 100 - Math.min(100, ccc / 90 * 100)),
+        portCard({ tab: 'money', pct: Math.max(0, 100 - Math.min(100, ccc / 90 * 100)),
           tone: ccc <= 45 ? 'ok' : (ccc <= 75 ? 'warn' : 'bad'),
           big: Math.round(ccc) + ' days', name: 'Cash cycle', sub: 'keep under 75 days' }) +
       '</div>' +
