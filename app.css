@@ -240,3 +240,8 @@ select{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;fo
 .qcard>summary small{opacity:.8;font-weight:500;font-size:12px}
 .qcard>form{background:#fff;color:var(--ink);padding:12px}
 .qcard .fld span{color:var(--mute)}
+
+
+/* Install banner */
+.inst{background:#fff8e6;border-color:#f0dfae}
+.inst .card-head{align-items:center}

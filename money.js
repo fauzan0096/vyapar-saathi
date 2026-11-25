@@ -1441,3 +1441,63 @@ function quickBar(tab) {
         '<div class="row-end"><button class="btn" type="submit">Save rate</button></div>' +
       '</form></details>';
 }
+
+
+/* =========================================================
+   Install banner: kholte hi "home screen par add karein"
+   ========================================================= */
+
+var mInstallEvt = null;
+window.addEventListener('beforeinstallprompt', function (e) {
+  e.preventDefault();
+  mInstallEvt = e;
+});
+
+function isInstalled() {
+  try {
+    if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) { return true; }
+    if (window.matchMedia && window.matchMedia('(display-mode: fullscreen)').matches) { return true; }
+    if (navigator.standalone === true) { return true; }
+  } catch (e) { /* ignore */ }
+  return false;
+}
+
+function installHidden() {
+  try {
+    var t = Number(localStorage.getItem('vyapar-install-hide') || 0);
+    return !!t && (Date.now() - t) < 3 * 86400000;
+  } catch (e) { return false; }
+}
+
+function installBanner() {
+  if (isInstalled() || installHidden()) { return ''; }
+  var button = mInstallEvt
+    ? '<div class="btnrow"><button class="btn" type="button" data-mact="m-install">Install app</button></div>'
+    : '';
+  return '<section class="card inst" id="instCard">' +
+    '<div class="card-head"><h2>Add it to your home screen</h2>' +
+      '<button class="link" type="button" data-mact="m-install-hide">later</button></div>' +
+    '<ol class="steps">' +
+      '<li>Open this link in <b>Safari</b>: tap Share &rarr; Copy Link, paste it in Safari.</li>' +
+      '<li>In Safari tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</li>' +
+      '<li>Tap <b>Add</b>. The icon opens full screen and works offline.</li>' +
+    '</ol>' +
+    button +
+    '<p class="muted small" style="margin:8px 0 0">No store, no download, no login &mdash; your data stays on this phone.</p>' +
+    '</section>';
+}
+
+document.addEventListener('click', function (e) {
+  var b = e.target.closest('[data-mact="m-install"], [data-mact="m-install-hide"]');
+  if (!b) { return; }
+  if (b.getAttribute('data-mact') === 'm-install-hide') {
+    try { localStorage.setItem('vyapar-install-hide', String(Date.now())); } catch (err) { /* ignore */ }
+    var el = document.getElementById('instCard');
+    if (el) { el.style.display = 'none'; }
+    return;
+  }
+  if (mInstallEvt) {
+    mInstallEvt.prompt();
+    mInstallEvt = null;
+  }
+});
