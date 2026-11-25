@@ -726,6 +726,33 @@ document.addEventListener('submit', function (e) {
     return;
   }
 
+  if (kind === 'q-bill') {
+    var cid = fval(f, 'cid');
+    var c = S.customers.filter(function (x) { return x.id === cid; })[0];
+    if (!c) { toast('Add a customer first'); return; }
+    var amt = fnum(f, 'amount');
+    if (amt <= 0) { toast('Enter the bill amount'); return; }
+    c.bills.push({
+      id: 'b' + Math.random().toString(36).slice(2, 7),
+      date: fval(f, 'date') || todayISO(), amount: amt, note: fval(f, 'note'), paidOn: ''
+    });
+    save(); render(true); toast('Bill added');
+    return;
+  }
+
+  if (kind === 'q-rate') {
+    var sup = fval(f, 'supplier');
+    var rt = fnum(f, 'rate');
+    if (!sup || rt <= 0) { toast('Enter supplier and rate'); return; }
+    S.quotes.push({
+      id: 'q' + Math.random().toString(36).slice(2, 7), date: todayISO(), supplier: sup,
+      item: fval(f, 'item') || S.settings.item, rate: rt, freight: fnum(f, 'freight'),
+      rejection: fnum(f, 'rejection'), moq: '', deliveryDays: 0, payDays: fnum(f, 'payDays')
+    });
+    save(); render(true); toast('Rate added');
+    return;
+  }
+
   if (kind === 'm-stock') {
     var name = fval(f, 'name');
     if (!name) { toast('Enter an item name'); return; }
@@ -1275,6 +1302,7 @@ function tabNote(tab) {
 
 function moreCard() {
   var items = [
+    ['quote', 'Quote', 'Floor price and rate ladder'],
     ['rate', 'Rates', 'Supplier rate sheet and true cost'],
     ['market', 'Market', 'Today\u2019s rate from your sheet']
   ];
@@ -1376,4 +1404,40 @@ function viewMoney() {
   return '' + (S.demo ? demoBanner() : '') +
     statementCard() + dataCard() + cashFlowCard() + capitalCard() +
     rejectCard() + moreCard() + helpCard() + stockCard() + chequeCard() + backupCard();
+}
+
+
+/* =========================================================
+   Quick bar: do bade button (Today par)
+   ========================================================= */
+
+function quickBar(tab) {
+  if (tab !== 'aaj') { return ''; }
+  var opts = S.customers.map(function (c) {
+    return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>';
+  }).join('');
+  return '' +
+    '<details class="qcard">' +
+      '<summary>+ Add bill <small>customer bill / payment</small></summary>' +
+      '<form data-mform="q-bill" class="grid2">' +
+        (opts
+          ? '<label class="fld"><span>Customer</span><select name="cid">' + opts + '</select></label>'
+          : '<p class="small" style="grid-column:1/-1;margin:0 0 8px">Add a customer in the Customers tab first.</p>') +
+        '<label class="fld"><span>Amount \u20B9</span><input type="number" name="amount" inputmode="decimal" step="any" placeholder="0"></label>' +
+        '<label class="fld"><span>Bill date</span><input type="date" name="date" value="' + todayISO() + '"></label>' +
+        '<label class="fld"><span>Invoice no (optional)</span><input type="text" name="note" placeholder="INV-.."></label>' +
+        '<div class="row-end"><button class="btn" type="submit">Save bill</button></div>' +
+      '</form></details>' +
+    '<details class="qcard">' +
+      '<summary>+ Add rate <small>supplier rate today</small></summary>' +
+      '<form data-mform="q-rate" class="grid2">' +
+        '<label class="fld"><span>Supplier</span><input type="text" name="supplier" list="dl-sup" placeholder="name"></label>' +
+        '<label class="fld"><span>Item</span><input type="text" name="item" list="dl-mat" value="' + esc(S.settings.item || '') + '"></label>' +
+        '<label class="fld"><span>Rate \u20B9 per ' + esc(S.settings.unit || 'unit') + '</span>' +
+          '<input type="number" name="rate" inputmode="decimal" step="any" placeholder="0"></label>' +
+        '<label class="fld"><span>Credit days</span><input type="number" name="payDays" inputmode="numeric" placeholder="0"></label>' +
+        '<label class="fld"><span>Freight \u20B9</span><input type="number" name="freight" inputmode="decimal" step="any" placeholder="0"></label>' +
+        '<label class="fld"><span>Rejection %</span><input type="number" name="rejection" inputmode="decimal" step="any" placeholder="0"></label>' +
+        '<div class="row-end"><button class="btn" type="submit">Save rate</button></div>' +
+      '</form></details>';
 }
