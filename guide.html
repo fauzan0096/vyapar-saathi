@@ -21,122 +21,106 @@
 <main>
 
 <section class="card">
-  <div class="card-head"><h2>Opening the app</h2></div>
+  <div class="card-head"><h2>1. Install (one minute)</h2></div>
   <ol class="steps">
-    <li>Open the link in Safari or Chrome.</li>
-    <li>Tap Share &rarr; <b>Add to Home Screen</b>. An icon appears; open the app from there.</li>
-    <li>The first load takes two or three seconds (the Excel reader is loading), after that it is instant.</li>
+    <li>Open the link in <b>Safari</b>.</li>
+    <li>Tap <b>Share</b> (the square with an arrow) &rarr; <b>Add to Home Screen</b> &rarr; <b>Add</b>.</li>
+    <li>The icon then opens full screen and works offline. No store, no download, no login.</li>
   </ol>
-  <p class="muted small" style="margin:8px 0 0">The app opens on <b>Portfolio</b>: six circles, one for each part of the business. Tap a circle to open that tab and edit the numbers.</p>
 </section>
 
 <section class="card">
-  <div class="card-head"><h2>1. Setup (once, ten minutes)</h2></div>
-  <p class="small" style="margin:0 0 6px">Enter these numbers:</p>
-  <ol class="steps">
-    <li>Business name and your name</li>
-    <li>Unit (kg / piece / bag)</li>
-    <li>Sales per month</li>
-    <li>Purchases per month</li>
-    <li>Expenses per month (salary, rent, power)</li>
-    <li>Credit days you give customers (60)</li>
-    <li>Credit days you get from suppliers (0 / 15 / 30)</li>
-    <li>Your funding rate (% per year &mdash; 12)</li>
-  </ol>
-  <p class="muted small" style="margin:8px 0 0">Then set <b>minimum margin</b> (3%) and <b>target margin</b> (6%). From these the app works out the floor and ask price for every customer. Backup is also in Setup.</p>
-</section>
-
-<section class="card">
-  <div class="card-head"><h2>2. Rates</h2></div>
-  <p class="small" style="margin:0 0 6px">For each quote, one line: date, supplier, item, rate, freight (&#8377; per unit), rejection %, credit days, MOQ.</p>
-  <p class="small" style="margin:0"><b>True cost = (rate + freight) &divide; (1 &minus; rejection%) &minus; benefit of supplier credit</b></p>
-  <p class="muted small" style="margin:8px 0 0">This is why the cheapest-looking rate is often the most expensive supplier.</p>
-</section>
-
-<section class="card">
-  <div class="card-head"><h2>3. Customers</h2></div>
-  <p class="small" style="margin:0">For every customer add <b>orders</b> (date, product, quantity, rate, promised delivery) and <b>bills</b> (bill date, amount, paid date). This drives reminders, the A/B/C grade, the loss-risk alert and the return on money.</p>
-</section>
-
-<section class="card">
-  <div class="card-head"><h2>4. Quote</h2></div>
-  <p class="small" style="margin:0 0 6px">Pick a customer and a quantity. You get:</p>
+  <div class="card-head"><h2>2. Five tabs &mdash; what is in each</h2></div>
   <ul class="steps">
-    <li><b>Floor</b> &mdash; selling below this is a loss</li>
-    <li><b>Ask</b> &mdash; your target rate</li>
-    <li><b>Rate ladder</b> &mdash; a different rate for 15 / 30 / 45 / 60 / 90 days of payment</li>
+    <li><b>Portfolio</b> &mdash; six circles: cash received, overdue, stock, customer grade, margin, cash cycle. A red circle is this week&rsquo;s job.</li>
+    <li><b>Today</b> &mdash; two big buttons (add a rate, add a bill) and today&rsquo;s jobs with ready messages.</li>
+    <li><b>Customers</b> &mdash; every customer with money outstanding; open one for orders, bills, grade and statement.</li>
+    <li><b>Money</b> &mdash; customer statement, Excel import/export, cash flow, money stuck, rejection log, backup. Quote, Rates and Market are under <b>More</b>.</li>
+    <li><b>Setup</b> &mdash; the eight numbers, margins, products, sample data and backup.</li>
   </ul>
-  <p class="muted small" style="margin:8px 0 0">Send the ladder message: the rate follows the days they take to pay. That one line ends most bargaining.</p>
+  <p class="muted small" style="margin:8px 0 0">Every tab also shows a one-line header at the top saying what it holds.</p>
 </section>
 
 <section class="card">
-  <div class="card-head"><h2>5. Today (two minutes a day)</h2></div>
-  <p class="small" style="margin:0">Late delivery, overdue payment, customer at risk, reorder due, rate movement &mdash; each with a ready message. Copy it or open WhatsApp. Snooze anything that can wait.</p>
+  <div class="card-head"><h2>3. Setup (once, ten minutes)</h2></div>
+  <ol class="steps">
+    <li>Business name and your name, unit (kg / piece / bag)</li>
+    <li>Sales per month, purchases per month, expenses per month</li>
+    <li>Credit days you give (60) and credit days you get (0 / 15 / 30)</li>
+    <li>Stock days you hold</li>
+    <li>Minimum margin (3%) and target margin (6%)</li>
+  </ol>
+  <p class="muted small" style="margin:8px 0 0">Leave the funding rate at <b>0</b> &mdash; there is no interest anywhere in the app. From these numbers the app works out the floor and ask price for every customer.</p>
 </section>
 
 <section class="card">
-  <div class="card-head"><h2>6. Cash, Money, Market</h2></div>
+  <div class="card-head"><h2>4. Add a rate and add a bill (twenty seconds each)</h2></div>
+  <p class="small" style="margin:0 0 6px"><b>Add rate</b> (on Today): supplier, item, rate, credit days. Freight and rejection are optional.</p>
+  <p class="small" style="margin:0"><b>Add bill</b> (on Today): customer, amount, bill date. Mark it paid the day the money arrives.</p>
+  <p class="muted small" style="margin:8px 0 0">Everything else in the app is calculated from these two entries.</p>
+</section>
+
+<section class="card">
+  <div class="card-head"><h2>5. Today and the reminder bar</h2></div>
   <ul class="steps">
-    <li><b>Cash</b> &mdash; removed from the menu. Working capital now sits in the Money tab as a "Money stuck" card, with no interest or discounting anywhere in the app.</li>
-    <li><b>Money</b> &mdash; six-month cash flow, stock reorder alerts, cheque diary, backup, Excel import and export.</li>
-    <li><b>Market</b> &mdash; today's rate from your published CSV link, compared with your own true cost. Manual entry when offline.</li>
+    <li>The bar at the top says what needs a reminder: overdue money, late delivery, items to order.</li>
+    <li><b>Tomorrow</b> or <b>Next week</b> puts a payment follow-up into the phone calendar (an .ics file: open it in Files to add the event).</li>
+    <li>Each job on Today has a ready message &mdash; copy it or open WhatsApp.</li>
   </ul>
 </section>
 
 <section class="card">
-  <div class="card-head"><h2>7. Importing Excel &mdash; three ways</h2></div>
-
-  <p class="small" style="margin:0 0 4px"><b>A. Copy and paste (no file needed)</b></p>
-  <ol class="steps">
-    <li>Open the sheet.</li>
-    <li>Copy the rows including the header.</li>
-    <li>App &rarr; Setup &rarr; Import &rarr; paste in the box &rarr; Import sales or Import rates.</li>
-  </ol>
-
-  <p class="small" style="margin:12px 0 4px"><b>B. Send the Excel file</b></p>
-  <ol class="steps">
-    <li>Save the file in Excel.</li>
-    <li>Send it to yourself on WhatsApp or email, open it on the phone, tap Share &rarr; <b>Save to Files</b>.</li>
-    <li>App &rarr; <b>Money</b> &rarr; &ldquo;Excel &mdash; import / export&rdquo;.</li>
-    <li>Choose the type: Sales (orders and bills) or Purchase (rate sheet).</li>
-    <li>Choose the file from Files.</li>
-    <li>The result appears: how many orders, bills and customers were added, and how many rows were not understood.</li>
-  </ol>
-
-  <p class="small" style="margin:12px 0 4px"><b>C. CSV</b></p>
-  <p class="small" style="margin:0">Excel &rarr; File &rarr; Save As &rarr; <b>CSV UTF-8</b> &rarr; send to the phone &rarr; import the same way.</p>
-
-  <p class="small" style="margin:12px 0 4px"><b>Required headers (names are matched, order does not matter)</b></p>
-  <ul class="steps">
-    <li><b>Sales:</b> Date &middot; Party &middot; Product &middot; Qty &middot; Rate (or Amount) &middot; Paid date &middot; Invoice no</li>
-    <li><b>Rates:</b> Date &middot; Supplier &middot; Item &middot; Rate &middot; Freight &middot; Credit days &middot; Rejection %</li>
-  </ul>
-  <p class="muted small" style="margin:8px 0 0">Three things break most old files: title rows above the header (delete them), several sheets (the first one is read), and amounts with currency symbols or commas.</p>
+  <div class="card-head"><h2>6. Customers and the statement</h2></div>
+  <p class="small" style="margin:0">Open a customer for orders, bills, grade and statement. <b>Print / Save as PDF</b> makes a clean one-page statement: bills, due dates, ageing, delivery % and rejection % &mdash; send it on WhatsApp.</p>
 </section>
 
 <section class="card">
-  <div class="card-head"><h2>8. Routine</h2></div>
+  <div class="card-head"><h2>7. Money tab</h2></div>
+  <ul class="steps">
+    <li><b>Statement</b> &mdash; pick a customer and open it.</li>
+    <li><b>Excel import/export</b> &mdash; .xlsx or .csv in, orders + bills or rate sheet out.</li>
+    <li><b>Cash flow</b> &mdash; six months of sales, bills raised and cash received.</li>
+    <li><b>Money stuck</b> &mdash; to receive, in stock, to pay, net blocked. No interest, no discounting.</li>
+    <li><b>Rejection log</b> &mdash; mark rejected quantity per order; the last 90 days&rsquo; percentage on top.</li>
+    <li><b>Backup</b> &mdash; copy, download, restore; the app keeps a daily snapshot of the last three days.</li>
+  </ul>
+</section>
+
+<section class="card">
+  <div class="card-head"><h2>8. Importing Excel &mdash; three ways</h2></div>
+  <ol class="steps">
+    <li><b>Copy and paste:</b> copy the rows with the header, paste them in Setup &rarr; Import.</li>
+    <li><b>File:</b> send the .xlsx to yourself on WhatsApp, tap Share &rarr; Save to Files, then Money &rarr; Excel &rarr; pick the file. The first sheet is read.</li>
+    <li><b>CSV:</b> Excel &rarr; Save As &rarr; CSV UTF-8, then the same steps.</li>
+  </ol>
+  <p class="small" style="margin:8px 0 0"><b>Headers:</b> Sales &mdash; Date, Party, Product, Qty, Rate (or Amount), Paid date, Invoice no. Rates &mdash; Date, Supplier, Item, Rate, Freight, Credit days, Rejection %.</p>
+  <p class="muted small" style="margin:6px 0 0">Three things break most old files: title rows above the header, several sheets, and amounts with currency symbols or commas.</p>
+</section>
+
+<section class="card">
+  <div class="card-head"><h2>9. Routine</h2></div>
   <ul class="steps">
     <li><b>Daily (2 min):</b> open Today and clear the jobs.</li>
-    <li><b>Weekly (5 min):</b> collect two or three supplier rates and enter them.</li>
+    <li><b>Weekly (5 min):</b> collect two or three supplier rates.</li>
     <li><b>First of the month (10 min):</b> read Portfolio (a red circle is the job), then Backup copy.</li>
   </ul>
 </section>
 
 <section class="card">
-  <div class="card-head"><h2>9. Three things to be clear about</h2></div>
+  <div class="card-head"><h2>10. Four things to be clear about</h2></div>
   <ul class="steps">
     <li>Data lives only on this phone. Without a backup, losing the phone means losing the data.</li>
     <li>The app does not invent market rates; it records what you or your supplier enter and turns it into a decision.</li>
     <li>No app can send WhatsApp messages by itself &mdash; the app writes the message, you tap send.</li>
+    <li>There is no interest, no discounting and no lending in the app.</li>
   </ul>
 </section>
 
 <section class="card">
-  <div class="card-head"><h2>10. Short message to forward</h2></div>
-  <div class="msg">Sir, this app keeps your rates, payments and stock in one place. It works out the floor price for every customer (after cost, interest and risk), writes the payment reminder, and the Portfolio shows the whole business in six circles.
+  <div class="card-head"><h2>11. Short message to forward</h2></div>
+  <div class="msg">Sir, this app keeps your rates, payments and stock in one place. It works out the floor price for every customer (after cost and risk), writes the payment reminder, and the Portfolio shows the whole business in six circles.
 
-Open the link &rarr; Share &rarr; Add to Home Screen. First fill the eight numbers in Setup, then import your old data from Excel (Money &rarr; Excel).
+Open the link &rarr; Share &rarr; Add to Home Screen. Fill the eight numbers in Setup, then add a rate and a bill on Today.
 
 Your data stays on your phone. Ten minutes to set up, then two minutes a day.</div>
 </section>

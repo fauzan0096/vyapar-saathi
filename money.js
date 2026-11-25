@@ -1577,3 +1577,44 @@ document.addEventListener('click', function (e) {
     toast('Calendar file could not be created');
   }
 });
+
+
+/* =========================================================
+   Current tab header + current How to use
+   ========================================================= */
+
+function tabNote(tab) {
+  var notes = {
+    port: ['Portfolio', 'Six circles: cash received, overdue, stock, customer grade, margin, cash cycle. A red circle is this week\u2019s job.'],
+    aaj: ['Today', 'Two big buttons: add a rate, add a bill. Below that, today\u2019s jobs with ready messages.'],
+    cust: ['Customers', 'Every customer with money outstanding. Open one for orders, bills, grade and statement.'],
+    money: ['Money', 'Customer statement, Excel import/export, cash flow, money stuck, rejection log and backup.'],
+    setup: ['Setup', 'The eight numbers the app runs on, margins, products, sample data and backup.'],
+    rate: ['Rates', 'Supplier rates, freight, rejection and the true cost of each supplier.'],
+    market: ['Market', 'Today\u2019s rate from your published sheet, compared with your own true cost.'],
+    quote: ['Quote', 'Floor price, ask price and the rate ladder for one customer and quantity.']
+  };
+  var n = notes[tab];
+  if (!n) { return ''; }
+  return '<div class="tabhdr"><b>' + esc(n[0]) + '</b><span>' + esc(n[1]) + '</span></div>';
+}
+
+function helpCard() {
+  var steps = [
+    ['1. Install', 'On the first screen tap Share \u2192 Add to Home Screen in Safari. The app then opens full screen and works offline.'],
+    ['2. Setup (once)', 'Eight numbers: sales, purchases, expenses, credit days you give, credit days you get, stock days, margins. Leave the funding rate at 0.'],
+    ['3. Add rate and add bill', 'On Today use the two big buttons. A rate takes 20 seconds; a bill takes 20 seconds. Everything else follows from these.'],
+    ['4. Today, two minutes', 'Every morning the app lists what needs a reminder \u2014 overdue, late delivery, reorder, rate move. Copy the message or open WhatsApp.'],
+    ['5. Customers', 'Open a customer for orders, bills and grade. Print / Save as PDF gives a statement you can send.'],
+    ['6. Money, once a week', 'Statement, Excel import and export, cash flow, money stuck, rejection log \u2014 and Backup copy once a month.'],
+    ['7. Reminder bar and calendar', 'The bar at the top is the shortest path to a reminder. Tomorrow / Next week puts it in the phone calendar.']
+  ];
+  return '<section class="card">' +
+    '<div class="card-head"><h2>How to use</h2><span class="hint">7 steps \u00B7 build v9</span></div>' +
+    steps.map(function (s) {
+      return '<div class="obj"><b class="small">' + esc(s[0]) + '</b><p>' + esc(s[1]) + '</p></div>';
+    }).join('') +
+    '<p class="muted small" style="margin:10px 0 0">Ten minutes to set up, two minutes a day after that. ' +
+    'Nothing is sent to a server \u2014 your data stays on this phone.</p>' +
+    '<div class="btnrow"><a class="btn" href="guide.html">Open the full guide</a></div></section>';
+}
