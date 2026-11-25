@@ -60,7 +60,7 @@ function render(toTop) {
       '<p class="muted small" style="margin:0">Open another tab, or close and reopen the app. ' +
       'Your data is safe &mdash; take a backup from the Money tab.</p></section>';
   }
-  document.getElementById('view').innerHTML = installBanner() + quickBar(tab) + tabNote(tab) + html;
+  document.getElementById('view').innerHTML = installBanner() + reminderBar() + quickBar(tab) + tabNote(tab) + html;
   var sub = document.getElementById('brandSub');
   if (sub) { sub.textContent = S.settings.business ? S.settings.business : 'Rates · Cash · Customers'; }
   if (toTop) { window.scrollTo(0, 0); }

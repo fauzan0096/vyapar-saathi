@@ -1501,3 +1501,79 @@ document.addEventListener('click', function (e) {
     mInstallEvt = null;
   }
 });
+
+
+/* =========================================================
+   Interest = 0, reminder bar, calendar (.ics)
+   ========================================================= */
+
+function zeroInterest() {
+  if (!S || S.z0 === 1) { return; }
+  S.z0 = 1;
+  if (num(S.settings.costOfFunds) === 12) { S.settings.costOfFunds = 0; }
+  save();
+}
+
+function icsText(title, dateISO, note) {
+  var d = String(dateISO || todayISO()).replace(/-/g, '');
+  var n = new Date();
+  function z(x) { return (x < 10 ? '0' : '') + x; }
+  var stamp = n.getUTCFullYear() + z(n.getUTCMonth() + 1) + z(n.getUTCDate()) + 'T' +
+    z(n.getUTCHours()) + z(n.getUTCMinutes()) + z(n.getUTCSeconds()) + 'Z';
+  function t(s) {
+    return String(s || '').replace(/\\/g, '\\\\').replace(/\n/g, '\\n')
+      .replace(/,/g, '\\,').replace(/;/g, '\\;');
+  }
+  return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Vyapar Saathi//EN', 'CALSCALE:GREGORIAN',
+    'BEGIN:VEVENT', 'UID:' + Date.now() + '@vyapar-saathi', 'DTSTAMP:' + stamp,
+    'DTSTART;VALUE=DATE:' + d, 'SUMMARY:' + t(title), 'DESCRIPTION:' + t(note || ''),
+    'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+}
+
+function reminderBar() {
+  zeroInterest();
+  var p = paymentStats();
+  var t = todayISO();
+  var late = S.orders.filter(function (o) { return !o.delivered && o.promised && o.promised < t; }).length;
+  var reorder = 0;
+  MDATA.stock.forEach(function (x) {
+    if (num(x.reorder) > 0 && num(x.qty) <= num(x.reorder)) { reorder += 1; }
+  });
+  var items = [];
+  if (p.overdue > 0) { items.push('Overdue ' + money(p.overdue)); }
+  if (late) { items.push(late + ' delivery late'); }
+  if (reorder) { items.push(reorder + ' item to order'); }
+  if (!items.length) { return ''; }
+  return '<section class="card bar-rem">' +
+    '<div class="card-head"><h2>Needs a reminder</h2>' +
+      '<button class="link" type="button" data-mtab="aaj">open</button></div>' +
+    '<p class="small" style="margin:0 0 8px">' + esc(items.join(' \u00B7 ')) + '</p>' +
+    '<div class="btnrow">' +
+      '<button class="btn alt" type="button" data-mact="m-cal" data-title="Payment follow-up" data-days="1">Tomorrow</button>' +
+      '<button class="btn alt" type="button" data-mact="m-cal" data-title="Payment follow-up" data-days="7">Next week</button>' +
+    '</div>' +
+    '<p class="muted small" style="margin:8px 0 0">Adds a reminder to the phone calendar \u2014 tap it in Files to put it in Calendar.</p>' +
+    '</section>';
+}
+
+document.addEventListener('click', function (e) {
+  var b = e.target.closest('[data-mact="m-cal"]');
+  if (!b) { return; }
+  var title = b.getAttribute('data-title') || 'Vyapar Saathi reminder';
+  var when = addDays(todayISO(), num(b.getAttribute('data-days')) || 1);
+  var ics = icsText(title, when, 'Open Vyapar Saathi and send the payment reminder.');
+  try {
+    var blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'reminder-' + when + '.ics';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 3000);
+    toast('Calendar file saved \u2014 open it to add the event');
+  } catch (err) {
+    toast('Calendar file could not be created');
+  }
+});

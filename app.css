@@ -245,3 +245,7 @@ select{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;fo
 /* Install banner */
 .inst{background:#fff8e6;border-color:#f0dfae}
 .inst .card-head{align-items:center}
+
+
+/* Reminder bar */
+.bar-rem{background:#fff5f5;border-color:#f3cfcf}
